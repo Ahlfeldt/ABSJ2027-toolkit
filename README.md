@@ -12,7 +12,9 @@ The toolkit shows height / floor area ratio (FAR), floor space rent, and land re
 
 Start with the **[illustrated showcase](SHOWCASE/README.md)** to see example experiments, figures, and downloadable tables. The **[codebook](documentation/CODEBOOK.pdf)** explains the equilibrium conditions, inversion, and numerical algorithms, including pseudocode for the optional empirical calibration.
 
-When using this toolkit in your work, please cite Ahlfeldt, Baum-Snow, and Jedwab, *The Skyscraper Revolution*.
+**Citation requirement**
+
+Use of this toolkit is subject to citing Ahlfeldt, Baum-Snow, and Jedwab, *The Skyscraper Revolution: Global Economic Development and Land Savings*. *The Review of Economic Studies*, forthcoming.
 
 **How this toolkit differs from related toolkits**
 
