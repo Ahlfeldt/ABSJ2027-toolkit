@@ -10,7 +10,7 @@ Following the AB2022 toolkit approach, this codebook defines the economic object
 
 ## Quick start
 
-Open MATLAB/scripts/MASTER.m and run the entire script. Edit its three sections: baseline parameters and fundamentals, empirical targets, and optional counterfactual changes. Defaults produce approximately three million urban residents, urbanization 0.5, and no height limits. Empty changes display only the baseline.
+Open either MATLAB/scripts/MASTER_PAPER.m or MATLAB/scripts/MASTER_EMPIRICAL.m and run the entire script. Edit its three sections: baseline parameters and fundamentals, empirical targets, and optional counterfactual changes. Defaults produce approximately three million urban residents, urbanization 0.5, and no height limits. Empty changes display only the baseline.
 
 ```text
 Set baseline parameters and fundamentals.

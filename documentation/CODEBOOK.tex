@@ -391,7 +391,7 @@ Show land-use zones and boundaries for each scenario\;
 The graph wrappers \code{GHEIGHT}, \code{GBIDRENT}, and \code{GLANDRENT} call \code{PLOT_PROFILE}. They plot saved equilibrium profiles, preserving the user's local fundamentals. They do not invoke a new solver evaluation. Height and floor-space rent are shown on occupied sectoral land; land bids show potential bids by sector. An empty counterfactual produces baseline-only figures and statistics.
 
 \subsection{Using the master script}
-Run \code{MASTER_PAPER.m} or \code{MASTER_EMPIRICAL.m} in \code{MATLAB/scripts}; \code{MASTER.m} delegates to the paper version. The user-facing inputs are baseline parameters and fundamentals, empirical moments, and optional counterfactual changes. The execution sequence is
+Run \code{MASTER_PAPER.m} or \code{MASTER_EMPIRICAL.m} in \code{MATLAB/scripts}. The user-facing inputs are baseline parameters and fundamentals, empirical moments, and optional counterfactual changes. The execution sequence is
 \begin{equation*}
  \texttt{CREATE\_CITY}\ \longrightarrow\ \texttt{QUANTIFY}\
  \longrightarrow\ [\texttt{COUNTERFACTUAL}]\ \longrightarrow\ \texttt{RESULTS}.
@@ -410,7 +410,7 @@ To combine an urban growth boundary and height constraints:
 \begin{singlespace}
 \begin{verbatim}
 changes = struct();
-changes.set.x1_max = 25;    % Maximum urban radius in km.
+changes.set.x1_max = 25;    % Maximum urban radius.
 changes.set.S_bar_C = 5;    % Commercial effective-height cap.
 changes.set.S_bar_R = 5;    % Residential effective-height cap.
 \end{verbatim}
@@ -419,11 +419,11 @@ Use absolute values for limits initially equal to infinity, zero-valued paramete
 
 \subsection{Implementation and validation}
 \subsubsection{Relationship to the replication code}
-The toolkit preserves the core solver's arithmetic and aggregation order. The growth-boundary extension assigns \code{U(D > params.x1_max) = 3} before boundaries and aggregates are calculated. It does not set the developable share $\ell$ to zero. The two originally hard-coded one-kilometre core radii are parameters with defaults of one. With these defaults and \code{x1_max = Inf}, the original conditional solver is recovered.
+The toolkit preserves the core solver's arithmetic and aggregation order. The growth-boundary extension assigns \code{U(D > params.x1_max) = 3} before boundaries and aggregates are calculated. It does not set the developable share $\ell$ to zero. The two originally hard-coded core radii are parameters with defaults of one model distance unit. With these defaults and \code{x1_max = Inf}, the original conditional solver is recovered.
 
 The equilibrium routine preserves clipping and damping while replacing implicit workspace state with explicit arguments. Rural inversion checks the target before its final update, so the returned primitive belongs to the returned equilibrium. Its starting value is consistent with the target share. Baseline quantification does not depend on a preceding estimation run.
 
-\code{MASTER.m} contains no function definitions. All named functions reside in individual files in \code{MATLAB/functions}; anonymous optimization handles only bind arguments to separate named objective functions. The toolkit omits Stata preprocessing, empirical estimation and bootstrap batches, all-city loops, and global aggregation. User population and urbanization targets are not silently capped. Changing structural parameters does not re-estimate other constants.
+The user-facing master scripts contain no function definitions. All named functions reside in individual files in \code{MATLAB/functions}; anonymous optimization handles only bind arguments to separate named objective functions. The toolkit omits Stata preprocessing, empirical estimation and bootstrap batches, all-city loops, and global aggregation. User population and urbanization targets are not silently capped. Changing structural parameters does not re-estimate other constants.
 
 \subsubsection{Numerical checks and limits}
 \code{VALIDATE_INPUTS} checks parameter domains, the ordering of spatial gradients, and change syntax. \code{EQFIND} rejects nonconvergence, invalid equilibria, missing commercial or residential sectors, and an unconstrained city at the grid edge. A larger grid requires baseline recalibration; it should not change between scenarios because it determines the agricultural land-rent domain.
@@ -465,7 +465,7 @@ See \code{VALIDATION.md} for the recorded checks, \code{SOURCE_MAP.md} for prove
 
 \clearpage
 \subsection{Matching residential floor space}\label{sec:floor_target}
-The optional \code{targets.floor_space_per_resident} targets residential square metres per model resident; its default is empty (disabled). Starting costs $c^R_0=c^C_0=150$ imply about 956 square metres in the unrestricted baseline. A common multiplier $k$ sets $c^R=kc^R_0$ and $c^C=kc^C_0$, preserving their initial ratio. An empty target retains both supplied costs. This calibrates physical quantities rather than changing reporting units.
+The optional \code{targets.floor_space_per_resident} targets residential square metres per model resident; its default is empty (disabled). It requires \code{targets.total_urban_area}, which identifies the physical spatial scale. Without that area target, the starting costs $c^R_0=c^C_0=150$ imply about $0.000956$ model floor-space units per resident, not 956 square metres. A common multiplier $k$ sets $c^R=kc^R_0$ and $c^C=kc^C_0$, preserving their initial ratio. An empty target retains both supplied costs.
 
 At each conditional city solution, compute and predict an update:
 \begin{equation}
@@ -492,7 +492,7 @@ Report nonconvergence rather than accepting an unmatched target\;
 \KwResult{Baseline matching floor space and the other active moments.}
 \end{algorithm2e}
 
-Manual FAR limits supersede height-gap calibration. Counterfactuals inherit both calibrated costs; explicit changes remain independent. In the earlier 50-square-metre calibration example, $k\simeq55.85$ gives about 50.04 square metres per resident. Height-gap calibration is disabled for this empirical quantification because the retained threshold $T$ belongs to the paper parameterization. Thresholds are not silently changed to force a fit. Core equations are unchanged, but paper-reference checks disable this additional calibration.
+Manual FAR limits supersede height-gap calibration. Counterfactuals inherit both calibrated costs; explicit changes remain independent. With the physical area target held fixed, the earlier 50-square-metre calibration example used $k\simeq55.85$ to obtain about 50.04 square metres per resident. Height-gap calibration is disabled for this empirical quantification because the retained threshold $T$ belongs to the paper parameterization. Thresholds are not silently changed to force a fit. Core equations are unchanged, but paper-reference checks disable this additional calibration.
 
 
 \clearpage
@@ -613,7 +613,7 @@ Algorithms~\ref{alg:optional_init}--\ref{alg:optional_search} explicitly add one
 
 \code{MASTER_EMPIRICAL.m} also starts with the paper's parameters, but targets annual wage 75,000 USD, residential rent 240 USD per square metre per year, geographic urban area $\pi18^2$ square kilometres, and central CBD FAR 10. A 5-metre grid resolves boundaries under steeper spatial gradients. The script estimates the construction-cost scale, agricultural land rent and tau scale; it does not preset the fitted tau multiplier. It saves under \code{MATLAB/outputs/Empirical}.
 
-Both scripts reset their input structures, accept optional counterfactual changes and contain no function definitions. \code{MASTER.m} is a compatibility entry point for the paper script. The separate output directories retain both examples when users switch between them. The empirical example is an alternative quantification, not a claim that the paper's original parameterization matches those additional physical moments.
+Both scripts reset their input structures, accept optional counterfactual changes and contain no function definitions. The separate output directories retain both examples when users switch between them. The empirical example is an alternative quantification, not a claim that the paper's original parameterization matches those additional physical moments.
 
 
 \clearpage

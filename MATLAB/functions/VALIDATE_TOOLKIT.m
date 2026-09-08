@@ -10,16 +10,18 @@ old_visibility = get(groot,'DefaultFigureVisible'); % Preserve the caller's grap
 cleanup_visibility = onCleanup(@() set(groot,'DefaultFigureVisible',old_visibility)); % Restore that preference even after a failure.
 set(groot,'DefaultFigureVisible','off'); % Validate figures without interrupting the desktop.
 timer = tic; report = struct(); report.checks = {}; % Start a machine-readable validation record.
-run(fullfile(matlab_root,'scripts','MASTER.m')); % Exercise the complete baseline-only user workflow.
-assert(isempty(counterfactual)); % No empty counterfactual solve or comparison output.
-assert(width(statistics)==3 && numel(figures)==3); % Baseline table and all three graphs must exist.
+run(fullfile(matlab_root,'scripts','MASTER_PAPER.m')); % Exercise the complete paper master workflow.
+expected_width = 3 + 2*~isempty(counterfactual); % Accept either the documented baseline-only mode or the current illustrative counterfactual.
+assert(width(statistics)==expected_width && numel(figures)==3); % The table mode and all three graphs must match the master inputs.
 assert(baseline.diagnostics.population_error < baseline.options.tol_U); % Enforce the population target.
 assert(max([baseline.diagnostics.labor_error,baseline.diagnostics.housing_error]) < 0.005); % Independently check market clearing.
 assert(abs(baseline.scalist.GDP-baseline.scalist.y*baseline.scalist.N/baseline.params.alpha_C)<1e-8); % GDP equals model output.
-report.checks{end+1} = 'Master baseline-only workflow, graphics, population, markets, and GDP'; % Record passed checks only.
+report.checks{end+1} = 'Paper master workflow, graphics, population, markets, and GDP'; % Record passed checks only.
 report.baseline = baseline.scalist; % Preserve baseline numeric benchmarks.
-SAVE_RESULTS(fullfile(report_folder,'baseline'),baseline,[],statistics,figures); % Save graphs for visual inspection.
-close(figures); % Close only this validation's figures.
+close(figures); % Close the figures created by the user-facing master.
+[baseline_statistics,baseline_figures] = RESULTS(baseline,[]); % Build an internally consistent baseline-only validation export.
+SAVE_RESULTS(fullfile(report_folder,'baseline'),baseline,[],baseline_statistics,baseline_figures); % Save baseline-only graphs for visual inspection.
+close(baseline_figures); % Release only figures created by this validation block.
 assert(isempty(COUNTERFACTUAL(baseline))); % Omitted changes must also skip the second solve.
 assert(isempty(COUNTERFACTUAL(baseline,struct('set',struct(),'pct',struct())))); % Empty operation blocks mean no experiment.
 zero.pct.a_bar_C = 0; unchanged = COUNTERFACTUAL(baseline,zero); % A specified zero shock is a valid comparison.
