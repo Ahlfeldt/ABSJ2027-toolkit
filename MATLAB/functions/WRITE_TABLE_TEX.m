@@ -29,7 +29,7 @@ for row = 1:height(statistics)
 end
 fprintf(fid,'\\bottomrule\n\\end{tabular}\n'); % Close the ruled table.
 fprintf(fid,'\\par\\smallskip\\begin{minipage}{0.96\\linewidth}\\footnotesize\n'); % Keep the note within the page width.
-fprintf(fid,'Notes: Monetary units and periods are given in the Unit column; rents are per square metre. Commuting disamenity income losses are utility equivalents. Height gap uses each scenario without height limits as benchmark at T; it is descriptive under empirical parameters. -- denotes an undefined value, including a gap with no unrestricted tall development. '); % State the unit convention.
+fprintf(fid,'Notes: Monetary and spatial units, including rent denominators, are given in the Unit column. Commuting disamenity income losses are utility equivalents. Height gap uses each scenario without height limits as benchmark at T; it is descriptive under empirical parameters. -- denotes an undefined value, including a gap with no unrestricted tall development. '); % State the monetary and spatial unit convention without presuming calibration.
 if comparison, fprintf(fid,'Changes are percentages relative to the baseline; -- denotes an undefined comparison. '); end % Explain comparison-only notation.
 fprintf(fid,'Displayed values are rounded to six significant digits; CSV and Excel files retain numeric values.\n'); % Distinguish print precision from data precision.
 fprintf(fid,'\\end{minipage}\n\\end{table}\n'); % Finish the includable fragment.

@@ -48,7 +48,9 @@ for j = 1:numel(cities)
 end
 set(land,'YTick',1:numel(cities),'YTickLabel',fliplr(labels),'FontName','Arial','FontSize',10,'Box','off','XGrid','on','YGrid','on','GridLineStyle',':','GridColor',[0.35 0.35 0.35],'GridAlpha',0.35,'Layer','top'); % Dotted grids align distance ticks and scenario rows.
 xlim(land,[0 xmax]); ylim(land,[0.5 numel(cities)+0.6]); % Fit the land-use strips and boundary annotations.
-xlabel(land,'Distance from city center (km)'); % Distances are radial, not two separate halves of the city.
+distance_unit = "model distance units"; % Paper parameters alone do not identify a physical distance scale.
+if isfield(baseline,'reporting') && isfield(baseline.reporting,'distance'), distance_unit = baseline.reporting.distance; end % Use kilometres only after spatial calibration.
+xlabel(land,'Distance from city center ('+distance_unit+')'); % Distances are radial, not two separate halves of the city.
 linkaxes([ax land],'x'); % Keep zooming consistent across profiles and land use.
 end
 

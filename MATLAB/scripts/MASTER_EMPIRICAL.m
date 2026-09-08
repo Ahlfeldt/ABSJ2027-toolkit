@@ -40,7 +40,7 @@ targets.floor_space_per_resident = []; % Quantity target disabled because reside
 % Optional experimental calibration: enter a positive m^2-per-resident target to scale both costs; this changes the economic baseline.
 targets.residential_rent = 240; % Alternative to floor_space_per_resident: average residential rent, currency per m^2 per YEAR.
 % Example: 240 means 240 USD/m^2/year if currency is USD; requires a positive targets.wage.
-% Choose ONE housing target only. Both adjust a common construction-cost multiplier, preserving c_R/c_C.
+% Choose ONE housing target only. Either requires targets.total_urban_area to define m^2 and scales c_R and c_C together.
 targets.total_urban_area = pi*18^2; % Optional geographic urban area in km^2, INCLUDING non-developable land; calibrates params.r_a.
 % Example: 1000 targets 1000 km^2 within the urban fringe. Can accompany either housing target.
 targets.cbd_far = 10; % Central CBD FAR; calibrates a common multiplier on tau_R and tau_C, preserving their ratio.

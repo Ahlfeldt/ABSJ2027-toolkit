@@ -38,6 +38,8 @@ Download or clone this repository, open one of the master scripts below in MATLA
 | [MASTER_EMPIRICAL.m](MATLAB/scripts/MASTER_EMPIRICAL.m) | Starts from the paper's parameters and adds empirical targets: annual wage 75,000 USD, residential rent 240 USD/m²/year, geographic urban area equivalent to an 18 km radius, and central CBD FAR 10. |
 | [MASTER.m](MATLAB/scripts/MASTER.m) | Compatibility entry point that runs the paper example. Edit `MASTER_PAPER.m` to change its inputs. |
 
+MASTER_PAPER.m does not calibrate a physical spatial scale. Its distance, land area, floor space, density, and rent denominators are therefore reported in model units. MASTER_EMPIRICAL.m uses the total-urban-area target to identify kilometres and square kilometres; this also permits floor-space quantities and rents to be expressed per square metre. Its wage target separately identifies annual currency units.
+
 Each main script has three input sections: baseline parameters, empirical targets, and optional counterfactual changes. For example:
 
 ```matlab
@@ -51,7 +53,7 @@ For baseline-only results, leave `changes = struct()` and comment out all subseq
 
 **Empirical inversion**
 
-Both examples target urban population and the urbanization rate, defined as the urban share of city plus hinterland population. The empirical example adds the following optional moments:
+Both examples target urban population and the urbanization rate, defined as the urban share of city plus hinterland population. The empirical example adds the following optional moments. Physical housing quantities and rents require a total-urban-area target to identify the spatial scale:
 
 | Target | Adjustment |
 |:--|:--|

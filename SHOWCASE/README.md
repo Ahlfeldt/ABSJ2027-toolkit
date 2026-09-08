@@ -59,13 +59,13 @@ rent are alternative targets, not two independent inputs to the same calibration
 The paper-parameterization example starts with approximately **3 million urban
 residents**, a **50% urbanization rate**, and no height limit or growth boundary.
 The counterfactual sets a FAR limit of **10** in both sectors and prevents urban
-use beyond **20 km** from the centre:
+use beyond **20 model distance units** from the centre:
 
 ```matlab
 changes = struct();
 changes.set.S_bar_C = 10; % Commercial FAR limit.
 changes.set.S_bar_R = 10; % Residential FAR limit.
-changes.set.x1_max = 20;  % Urban growth boundary, km from the centre.
+changes.set.x1_max = 20;  % Urban growth boundary, model distance units from the centre.
 ```
 
 FAR is floor space per unit developable land. In the model it represents effective
@@ -74,12 +74,12 @@ commercial district and surrounding residential land.
 
 ### Where the city builds—and where it stops
 
-![Building heights and land-use boundaries with FAR 10 and a 20 km growth boundary](paper_height.png)
+![Building heights and land-use boundaries with FAR 10 and a 20-model-unit growth boundary](paper_height.png)
 
 Orange denotes commercial use and blue residential use. Solid lines show the
 baseline, dashed lines the counterfactual. The strips beneath the profile show
 the commercial boundary and urban fringe. The commercial cap binds near the
-centre; the fringe moves from **28.59 km to 20 km**. Although both sectors face
+centre; the fringe moves from **28.59 to 20 model distance units**. Although both sectors face
 the same cap, a cap need not bind in both sectors.
 
 ### Floor-space rents and land rents
@@ -99,10 +99,10 @@ bid outside the boundary does not make development permissible.
 | Outcome | Baseline | With constraints | Change |
 |---|---:|---:|---:|
 | Urban population (millions) | 2.998 | 2.411 | -19.58% |
-| Total geographic urban area (km²) | 2,567.9 | 1,256.6 | -51.06% |
-| Residents per developable km² | 2,335 | 3,837 | +64.33% |
-| Total floor space (km² of floors) | 3,623.0 | 2,631.8 | -27.36% |
-| Urban fringe (km) | 28.59 | 20.00 | -30.05% |
+| Total geographic urban area (model area units) | 2,567.9 | 1,256.6 | -51.06% |
+| Residents per developable model area unit | 2,335 | 3,837 | +64.33% |
+| Total floor space (model floor-space units) | 3,623.0 | 2,631.8 | -27.36% |
+| Urban fringe (model distance units) | 28.59 | 20.00 | -30.05% |
 
 In this joint experiment, **GDP falls by 20.36%**, average residential rent rises
 by **8.35%**, and urban utility falls by **6.01%**. The city loses population but
@@ -110,9 +110,7 @@ loses proportionately more land, so average density rises. These are the combine
 effects of the two restrictions; they do not isolate the contribution of each.
 Run each constraint separately to make that comparison.
 
-The paper version retains its model monetary normalization. Percentage changes
-are useful for interpretation; its absolute floor-space consumption and rent
-levels have not been separately fitted to real-world measurements.
+The paper example calibrates neither monetary nor physical spatial levels. Monetary outcomes, distances, areas, floor space, densities, and rent denominators are therefore in model units; percentage changes remain directly interpretable.
 
 <details>
 <summary>Full exported outcome table: paper-parameterization example</summary>
@@ -124,16 +122,16 @@ levels have not been separately fitted to real-world measurements.
 | GDP | model units | 4.01333e+06 | 3.19608e+06 | -20.3633 |
 | Wage bill | model units | 3.41133e+06 | 2.71667e+06 | -20.3633 |
 | Wage | model units / worker | 1.13781 | 1.12678 | -0.969182 |
-| Total urban area | km^2 | 2,567.9 | 1,256.64 | -51.0636 |
-| Developable urban area | km^2 | 1,283.95 | 628.319 | -51.0636 |
-| Population density | people / km^2 | 2,335.1 | 3,837.23 | 64.328 |
-| CBD boundary | km | 6.27 | 6.52 | 3.98724 |
-| Urban fringe | km | 28.59 | 20 | -30.0455 |
-| Commercial floor space | km^2 of floors | 759.331 | 634.592 | -16.4275 |
-| Residential floor space | km^2 of floors | 2,863.69 | 1,997.19 | -30.2582 |
-| Total floor space | km^2 of floors | 3,623.02 | 2,631.78 | -27.3595 |
-| Average residential rent | model units / m^2 | 0.000444938 | 0.000482084 | 8.34855 |
-| Average commercial rent | model units / m^2 | 0.000811494 | 0.000771967 | -4.87091 |
+| Total urban area | model area units | 2,567.9 | 1,256.64 | -51.0636 |
+| Developable urban area | model area units | 1,283.95 | 628.319 | -51.0636 |
+| Population density | people / model area unit | 2,335.1 | 3,837.23 | 64.328 |
+| CBD boundary | model distance units | 6.27 | 6.52 | 3.98724 |
+| Urban fringe | model distance units | 28.59 | 20 | -30.0455 |
+| Commercial floor space | model floor-space units | 759.331 | 634.592 | -16.4275 |
+| Residential floor space | model floor-space units | 2,863.69 | 1,997.19 | -30.2582 |
+| Total floor space | model floor-space units | 3,623.02 | 2,631.78 | -27.3595 |
+| Average residential rent | model monetary units / model floor-space unit | 444.938 | 482.084 | 8.34855 |
+| Average commercial rent | model monetary units / model floor-space unit | 811.494 | 771.967 | -4.87091 |
 | Commuting disamenity index | index | 1.25984 | 1.21817 | -3.30715 |
 | Commuting disamenity: income loss per resident | model units / resident | 0.212398 | 0.183529 | -13.5922 |
 | Commuting disamenity: share of wage | % of wage | 18.6673 | 16.2879 | -12.7466 |
@@ -142,7 +140,7 @@ levels have not been separately fitted to real-world measurements.
 | Urban utility | utility units | 0.104587 | 0.0983025 | -6.00881 |
 | Regional expected welfare | utility units | 0.116561 | 0.113353 | -2.75276 |
 | Aggregate regional land rent | model units | 1.26885e+06 | 1.22587e+06 | -3.38743 |
-| Residential floor space per resident | m^2 / resident | 955.708 | 827.437 | -13.4215 |
+| Residential floor space per resident | model floor-space units / resident | 0.000955708 | 0.000827437 | -13.4215 |
 | Housing expenditure per resident | model units / resident | 0.386855 | 0.383105 | -0.969182 |
 | Height gap (relative to T) | % | 0 | 7.94731 | — |
 

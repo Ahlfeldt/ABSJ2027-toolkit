@@ -8,6 +8,7 @@ for k = 1:numel(fields)
     if active(k), validateattributes(targets.(fields{k}),{'numeric'},{'scalar','real','finite','positive'},mfilename,fields{k}); end % Reject invalid moments before solving.
 end
 if all(active(1:2)), error('ABSJ2027:HousingTargets','Choose either floor_space_per_resident or residential_rent, not both.'); end % Avoid conflicting housing targets.
+if any(active(1:2)) && ~active(3), error('ABSJ2027:SpatialUnits','A floor-space quantity or rent target requires targets.total_urban_area to identify the physical spatial scale.'); end % Square metres are undefined without an area calibration.
 if active(2) && (~isfield(targets,'wage') || isempty(targets.wage))
     error('ABSJ2027:RentUnits','A residential_rent target requires targets.wage: rent is annual currency per m^2, in the same currency as annual wages.'); % Define the monetary scale explicitly.
 end

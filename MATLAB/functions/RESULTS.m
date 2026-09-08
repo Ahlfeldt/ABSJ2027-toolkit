@@ -8,7 +8,12 @@ units = REPORT_UNITS(baseline); % Fix one monetary conversion from the baseline 
 displayed_base = REPORT_CITY(baseline,units); % Convert reporting values without altering the solved city.
 fields = {'N','urban_share','GDP','wage_bill','y','total_urban_area','AREA','density','x0','x1','F_C','F_R','F','p_R','p_C','CC','commuting_income_loss','commuting_loss_pct','DD','HA','U_bar','V','LV','floor_space_per_resident','housing_expenditure','height_gap_pct'}; % Ordered model outcomes.
 metric = ["Urban population";"Urbanization rate";"GDP";"Wage bill";"Wage";"Total urban area";"Developable urban area";"Population density";"CBD boundary";"Urban fringe";"Commercial floor space";"Residential floor space";"Total floor space";"Average residential rent";"Average commercial rent";"Commuting disamenity index";"Commuting disamenity: income loss per resident";"Commuting disamenity: share of wage";"Density amenity index";"Height amenity index";"Urban utility";"Regional expected welfare";"Aggregate regional land rent";"Residential floor space per resident";"Housing expenditure per resident";"Height gap (relative to T)"]; % Plain-language labels.
-unit = ["people";"fraction";units.flow;units.flow;units.flow+" / worker";"km^2";"km^2";"people / km^2";"km";"km";"km^2 of floors";"km^2 of floors";"km^2 of floors";units.rent;units.rent;"index";units.flow+" / resident";"% of wage";"index";"index";"utility units";"utility units";units.flow;"m^2 / resident";units.flow+" / resident";"%"]; % Explicit monetary periods and square-metre rent units.
+unit = ["people";"fraction";units.flow;units.flow;units.flow+" / worker";units.area;units.area;units.density;units.distance;units.distance;units.floor_area;units.floor_area;units.floor_area;units.rent;units.rent;"index";units.flow+" / resident";"% of wage";"index";"index";"utility units";"utility units";units.flow;units.floor_per_resident;units.flow+" / resident";"%"]; % Use physical spatial units only when a geographic-area target identifies their scale.
+if units.spatial
+    fprintf('Spatial reporting: calibrated km, km^2, and m^2 units from targets.total_urban_area.\n');
+else
+    fprintf('Spatial reporting: model distance, area, and floor-space units; no physical spatial scale is calibrated.\n');
+end
 if units.annual, metric(5) = "Average annual wage"; end % Name the observed wage convention when calibrated.
 base = zeros(numel(fields),1); % Allocate the baseline column.
 for k = 1:numel(fields), base(k) = displayed_base.scalist.(fields{k}); end % Read saved scalars without resolving.
@@ -29,7 +34,7 @@ fprintf('Baseline target fit: population error %.4f%%; labor residual %.4f%%; ho
 if units.annual
     fprintf('Monetary values: %s; annual flows. Both scenarios use the baseline wage conversion.\n',char(units.money)); % Explain the reporting scale.
 else
-    fprintf('No observed wage supplied: monetary values remain in model units. Rents are per m^2.\n'); % Avoid implying an empirical monetary calibration.
+    fprintf('No observed wage supplied: monetary values remain in model units; rent denominators follow the reported spatial scale.\n'); % Avoid implying an empirical monetary calibration.
 end
 fprintf('Height gap is relative to each scenario without height limits, using T; undefined if unrestricted tall development is absent. Under empirical parameterization it is descriptive, not calibrated to the paper height-gap moment.\n'); % Clarify interpretation and missing denominators.
 disp(statistics); % Print the reusable MATLAB table.

@@ -45,14 +45,14 @@
 This codebook describes the MATLAB toolkit accompanying \emph{The Skyscraper Revolution}. It defines the primitives and endogenous objects, states the equilibrium conditions, and gives the numerical algorithms in pseudocode. The toolkit quantifies a stylized city from population, urbanization, and an optional height-gap target. Users can then change fundamentals or parameters and compare the baseline and counterfactual equilibria. A horizontal growth boundary extends the paper's model and is inactive by default. The presentation is intended to support a subsequent Python implementation of the same algorithms; the current implementation is MATLAB.
 \end{abstract}
 \vfill
-\noindent\small Implementation companion. Monetary quantities are in model units unless an annual wage target supplies a currency conversion. The toolkit covers illustrative city experiments; it does not reproduce the complete empirical pipeline. 
+\noindent\small Implementation companion. Monetary and spatial quantities are in model units unless the corresponding empirical targets supply currency and physical spatial scales. The toolkit covers illustrative city experiments; it does not reproduce the complete empirical pipeline.
 \end{titlepage}
 \pagenumbering{arabic}
 \hypersetup{pageanchor=true}
 \appendix
 \section{The ABSJ2027 toolkit}
 \subsection{Equilibrium}
-The economy consists of a circular city and its rural hinterland. Let $u\in\{R,C\}$ denote residential and commercial use, and let $x\geq0$ denote distance in kilometres from the centre. Available land in a radial interval is $\dd L(x)=2\pi\ell x\dd x$. The equilibrium state is wage $y$, urban utility $\Ubar$, and density $\dens$. Regional population $\Nbar$ and the rural-utility primitive $\Utilde$ govern urban population:
+The economy consists of a circular city and its rural hinterland. Let $u\in\{R,C\}$ denote residential and commercial use, and let $x\geq0$ denote distance in model units from the centre. Available land in a radial interval is $\dd L(x)=2\pi\ell x\dd x$. The equilibrium state is wage $y$, urban utility $\Ubar$, and density $\dens$. Regional population $\Nbar$ and the rural-utility primitive $\Utilde$ govern urban population:
 \begin{align}
  N&=\Nbar\frac{\Ubar^\zeta}{\Ubar^\zeta+\Utilde}, &
  \dens&=\frac{N}{\pi\ell x_1^2}. \label{eq:population}
@@ -121,8 +121,8 @@ The equilibrium routine iterates all three state variables. The standard concent
 $\alpha^R,\alpha^C$ & \code{alpha_R}, \code{alpha_C} & Non-housing spending and labour shares: $0.66$, $0.85$.\\
 $\beta_D$ & \code{beta_dens_R} & Density elasticity of amenities: $-0.1053554548$.\\
 $\beta_P,\beta^C$ & \code{beta_R}, \code{beta_C} & Population elasticities: $0$, $0.03$.\\
-$\tau^R,\tau^C$ & \code{tau_R}, \code{tau_C} & Spatial decay per km: $0.016$, $0.014$.\\
-$\underline x^R,\underline x^C$ & \code{x_core_R}, \code{x_core_C} & Flat core radii: $1$, $1$ km.\\
+$\tau^R,\tau^C$ & \code{tau_R}, \code{tau_C} & Spatial decay per model distance unit: $0.016$, $0.014$.\\
+$\underline x^R,\underline x^C$ & \code{x_core_R}, \code{x_core_C} & Flat core radii: $1$, $1$ model distance units.\\
 $\omega^R,\omega^C$ & \code{omega_R}, \code{omega_C} & Height elasticities of rent: $0.07$, $0.03$.\\
 $\theta^R,\theta^C$ & \code{theta_R}, \code{theta_C} & Height elasticities of unit cost: $0.55$, $0.50$.\\
 $c^R,c^C$ & \code{c_R}, \code{c_C} & Construction-cost scales: $150$, $150$.\\
@@ -132,7 +132,7 @@ $\ell$ & \code{ell} & Developable land share: $0.5$.\\
 $\zeta$ & \code{zeta} & Preference heterogeneity: $6.4$; requires $\zeta>0$.\\
 $T$ & \code{T} & Tall-height threshold: $2.9605069279$.\\
 $\bar S^R,\bar S^C$ & \code{S_bar_R}, \code{S_bar_C} & Height limits: $\infty$, $\infty$.\\
-$x_{1,\max}$ & \code{x1_max} & Maximum urban radius: $\infty$ km.\\
+$x_{1,\max}$ & \code{x1_max} & Maximum urban radius: $\infty$ model distance units.\\
 $a^R_{\mathrm{loc}},a^C_{\mathrm{loc}}$ & \code{a_rand_R}, \code{a_rand_C} & Positive local multipliers in \code{fund}; default vectors of ones.\\
 $\Nbar$ & \code{N_bar} & Regional population, calibrated to $N^{\mathrm{target}}/\mu$.\\
 $\Utilde$ & \code{U_tilde} & Rural utility to the power $\zeta$, inverted to match $\mu$.\\
@@ -154,9 +154,9 @@ $\mu$ & \code{urban_share} & Urban share of regional population: $0.5$, strictly
 $g$ & \code{height_gap} & Unrealized tall floor-space fraction: $0$; \code{[]} retains direct sector caps.\\\midrule
 \multicolumn{3}{l}{\emph{Equilibrium state and local objects}}\\
 $y,\Ubar$ & \code{y}, \code{U_bar} & Wage and urban utility.\\
-$\dens$ & \code{density} & Urban population per developable square kilometre.\\
+$\dens$ & \code{density} & Urban population per developable model area unit unless physical area is targeted.\\
 $N$ & \code{N} & Endogenous urban population.\\
-$x_0,x_1$ & \code{x0}, \code{x1} & CBD boundary and residential fringe (km).\\
+$x_0,x_1$ & \code{x0}, \code{x1} & CBD boundary and residential fringe (model distance units unless physical area is targeted).\\
 $q^R,q^C$ & \code{a_x_R}, \code{a_x_C} & Demand shifters, Eqs.~\eqref{eq:qC}--\eqref{eq:qR}.\\
 $S^R,S^C$ & \code{S_x_R}, \code{S_x_C} & Realized sectoral building heights.\\
 $\bar p^R,\bar p^C$ & \code{p_bar_x_R}, \code{p_bar_x_C} & Local average floor-space rents.\\
@@ -174,7 +174,7 @@ $\mathrm{LV}$ & \code{LV} & Total land rent over the numerical region.\\
 
 \noindent Conditional on the construction-cost level, the three targets identify regional population, rural utility, and, when requested, a common height cap. An additional residential floor-space target can identify the cost level, as described in Section~\ref{sec:floor_target}. They do not separately estimate productivity or amenity fundamentals. Editing baseline inputs and rerunning quantifies a new baseline. A counterfactual instead preserves the calibrated primitives except for explicit changes, allowing urban population to respond.
 
-\noindent Wages, rents, and output are expressed in model units. Neither these targets nor the toolkit supply an independent currency conversion.
+\noindent Under the paper parameterization, monetary and spatial levels are in model units: distances, areas, floor space, density denominators, and rent denominators do not represent kilometres or square metres. A wage target identifies annual currency units. A total-urban-area target identifies kilometres and square kilometres and thereby supports square-metre reporting for floor-space quantities and rents. Consequently, either physical housing target requires the area target.
 \clearpage
 \subsection{Aggregate outcomes}
 GDP is urban output, rather than the wage bill. Welfare and total land rent include the rural hinterland:
@@ -184,7 +184,7 @@ GDP is urban output, rather than the wage bill. Welfare and total land rent incl
  \mathrm{LV}&=\int_{\Cset}r^C\dd L+\int_{\Rset}r^R\dd L+
                        \int_{\Aset}r^a\dd L.\label{eq:LV}
 \end{align}
-The last integral extends to the fixed numerical radius, 100 km by default. This radius is distinct from the urban growth boundary and should remain unchanged across baseline and counterfactual.
+The last integral extends to the fixed numerical radius, 100 model distance units by default. This radius is distinct from the urban growth boundary and should remain unchanged across baseline and counterfactual.
 
 Define resident- and employment-weighted averages by
 \begin{equation}
@@ -230,7 +230,7 @@ Initialize $a^R_{\mathrm{loc},i}=a^C_{\mathrm{loc},i}=1$\;
 \end{algorithm2e}
 
 
-\noindent The grid defaults to $R_{\mathrm{grid}}=100$ km and $h=0.01$ km. The replication uses $\delta$, rather than $h$, in its quadrature weights. The toolkit preserves this convention. Developable cell area is $\ell G_i$; reported urban area remains $\pi\ell x_1^2$.
+\noindent The grid defaults to $R_{\mathrm{grid}}=100$ and $h=0.01$ model distance units. The replication uses $\delta$, rather than $h$, in its quadrature weights. The toolkit preserves this convention. Developable cell area is $\ell G_i$; reported urban area remains $\pi\ell x_1^2$.
 
 
 \begin{algorithm2e}[H]
@@ -609,7 +609,7 @@ Both starting decay rates must be positive. The moment is realized commercial fl
 
 Algorithms~\ref{alg:optional_init}--\ref{alg:optional_search} explicitly add one log coordinate and one log moment error when this target is active. For initialization, it first fits any housing and area targets at the supplied taus. It predicts a tau multiplier from the resulting central FAR mismatch, then jointly adjusts all active parameters. Every trial re-matches population and urbanization, retaining manual height limits. The final 0.5\% check also applies to CBD FAR; no empirical moment is silently discarded. Diagnostics retain the starting taus, common multiplier and achieved central FAR. Counterfactuals inherit calibrated taus unless explicitly changed.
 
-\code{MASTER_PAPER.m} preserves the paper's parameter values and the original 10-metre radial grid. Population, urbanization and height-gap inversion remain active, while wage conversion and additional physical targets are empty. It saves figures and tables under \code{MATLAB/outputs/Paper}.
+\code{MASTER_PAPER.m} preserves the paper's parameter values and the original 0.01 model-distance-unit radial grid. Population, urbanization and height-gap inversion remain active, while wage conversion and additional physical targets are empty. Its output table explicitly labels all spatial quantities and rent denominators as model units. It saves figures and tables under \code{MATLAB/outputs/Paper}.
 
 \code{MASTER_EMPIRICAL.m} also starts with the paper's parameters, but targets annual wage 75,000 USD, residential rent 240 USD per square metre per year, geographic urban area $\pi18^2$ square kilometres, and central CBD FAR 10. A 5-metre grid resolves boundaries under steeper spatial gradients. The script estimates the construction-cost scale, agricultural land rent and tau scale; it does not preset the fitted tau multiplier. It saves under \code{MATLAB/outputs/Empirical}.
 
