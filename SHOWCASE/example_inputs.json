@@ -1,0 +1,140 @@
+{
+  "Paper": {
+    "targets": {
+      "population": 3000000.0,
+      "floor_space_per_resident": [],
+      "residential_rent": [],
+      "total_urban_area": [],
+      "cbd_far": [],
+      "urban_share": 0.5,
+      "height_gap": 0,
+      "wage": [],
+      "currency": "USD"
+    },
+    "diagnostics": {
+      "iterations": 9,
+      "labor_error": 0.00010200226694045966,
+      "housing_error": 0.0005849580530870035,
+      "density_error": 5.944464236407043e-06,
+      "height_gap_overridden": false,
+      "iteration_type": "rural-utility inversion",
+      "population_error": 0.0006141912987298603,
+      "height_gap": 0,
+      "height_gap_identified": true,
+      "height_gap_outcome": 0
+    },
+    "parameters": {
+      "alpha_R": 0.66,
+      "alpha_C": 0.85,
+      "beta_R": 0,
+      "beta_dens_R": -0.10535545480050244,
+      "beta_C": 0.03,
+      "tau_R": 0.016,
+      "tau_C": 0.014,
+      "x_core_R": 1,
+      "x_core_C": 1,
+      "omega_R": 0.07,
+      "omega_C": 0.03,
+      "theta_C": 0.5,
+      "theta_R": 0.55,
+      "c_R": 150,
+      "c_C": 150,
+      "a_bar_R": 2,
+      "a_bar_C": 2,
+      "r_a": 50,
+      "ell": 0.5,
+      "zeta": 6.4,
+      "T": 2.9605069278556773,
+      "S_bar_C": "unrestricted",
+      "S_bar_R": "unrestricted",
+      "x1_max": "unrestricted",
+      "N_bar": 6000000.0,
+      "U_tilde": 5.311150258097213e-07
+    },
+    "changes": {
+      "set": {
+        "S_bar_C": 10,
+        "S_bar_R": 10,
+        "x1_max": 20
+      }
+    },
+    "baseline_cbd_far": 22.150601482812448,
+    "counterfactual_cbd_far": 10
+  },
+  "Empirical": {
+    "targets": {
+      "population": 3000000.0,
+      "floor_space_per_resident": [],
+      "residential_rent": 240,
+      "total_urban_area": 1017.8760197630929,
+      "cbd_far": 10,
+      "urban_share": 0.5,
+      "height_gap": [],
+      "wage": 75000,
+      "currency": "USD"
+    },
+    "diagnostics": {
+      "iterations": 8,
+      "labor_error": 0.0009923992448178653,
+      "housing_error": 3.565087737000816e-05,
+      "density_error": 9.112483562834228e-06,
+      "height_gap_overridden": false,
+      "iteration_type": "rural-utility inversion",
+      "population_error": 0.0007944394124245191,
+      "optional_target_relative_errors": [
+        0.00022575186032081085,
+        0.0011114197530865955,
+        -0.0005151836358500139
+      ],
+      "optional_target_tolerance": 0.005,
+      "starting_tau_R": 0.016,
+      "starting_tau_C": 0.014,
+      "tau_multiplier": 2.299909208739855,
+      "cbd_far": 9.9948481636415,
+      "starting_c_R": 150,
+      "starting_c_C": 150,
+      "starting_r_a": 50,
+      "construction_cost_multiplier": 8.64317485202019,
+      "height_gap_identified": true,
+      "height_gap_outcome": 0
+    },
+    "parameters": {
+      "alpha_R": 0.66,
+      "alpha_C": 0.85,
+      "beta_R": 0,
+      "beta_dens_R": -0.10535545480050244,
+      "beta_C": 0.03,
+      "tau_R": 0.03679854733983769,
+      "tau_C": 0.03219872892235797,
+      "x_core_R": 1,
+      "x_core_C": 1,
+      "omega_R": 0.07,
+      "omega_C": 0.03,
+      "theta_C": 0.5,
+      "theta_R": 0.55,
+      "c_R": 1296.4762278030285,
+      "c_C": 1296.4762278030285,
+      "a_bar_R": 2,
+      "a_bar_C": 2,
+      "r_a": 26.096336081506273,
+      "ell": 0.5,
+      "zeta": 6.4,
+      "T": 2.9605069278556773,
+      "S_bar_C": "unrestricted",
+      "S_bar_R": "unrestricted",
+      "x1_max": "unrestricted",
+      "N_bar": 6000000.0,
+      "U_tilde": 7.094201978065712e-10
+    },
+    "changes": {
+      "set": {
+        "S_bar_C": 7.5,
+        "S_bar_R": 7.5,
+        "x1_max": 15
+      }
+    },
+    "baseline_cbd_far": 9.9948481636415,
+    "counterfactual_cbd_far": 7.5
+  },
+  "snapshot_date": "2026-09-09"
+}

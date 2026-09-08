@@ -1,0 +1,636 @@
+% ABSJ2027 toolkit codebook. Compile twice with pdflatex, or once with tectonic.
+% Self-contained: no files are read from the paper or AB2022 directories.
+% Typography and algorithm2e options follow the paper's Overleaf preamble.
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts,amsmath,amssymb,amsthm}
+\usepackage{geometry,setspace,vmargin}
+\setmarginsrb{25mm}{5mm}{25mm}{17.5mm}{12pt}{11mm}{0pt}{5mm}
+\usepackage{array,booktabs,tabularx,longtable,ragged2e}
+\usepackage[ruled,vlined,linesnumbered,algo2e,english]{algorithm2e}
+\usepackage[hyperfootnotes=false]{hyperref}
+\hypersetup{colorlinks=true,citecolor=blue,linkcolor=red,urlcolor=blue,
+ pdftitle={ABSJ2027 Toolkit: Codebook},pdfauthor={ABSJ2027 Toolkit}}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\Ubar}{\bar U}
+\newcommand{\Utilde}{\widetilde U}
+\newcommand{\Nbar}{\bar N}
+\newcommand{\dens}{\mathcal D}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\Rset}{\mathcal R}
+\newcommand{\Cset}{\mathcal C}
+\newcommand{\Aset}{\mathcal A}
+\newcommand{\epsEQ}{\varepsilon_{\mathrm{eq}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DontPrintSemicolon
+\SetKwRepeat{Do}{do}{while}
+\onehalfspacing
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\vspace*{25mm}
+\begin{center}
+{\LARGE Codebook for:\\[4mm] The \textit{Skyscraper Revolution}:\\[2mm] Global Economic Development and Land Savings\par}
+\vspace{9mm}
+{\large ABSJ2027 toolkit\par}
+\vspace{8mm}
+{Gabriel M. Ahlfeldt, Nathaniel Baum-Snow, and R\'emi Jedwab\par}
+\vspace{7mm}
+{9 September 2026\par}
+\end{center}
+\vspace{12mm}
+\begin{abstract}
+This codebook describes the MATLAB toolkit accompanying \emph{The Skyscraper Revolution}. It defines the primitives and endogenous objects, states the equilibrium conditions, and gives the numerical algorithms in pseudocode. The toolkit quantifies a stylized city from population, urbanization, and an optional height-gap target. Users can then change fundamentals or parameters and compare the baseline and counterfactual equilibria. A horizontal growth boundary extends the paper's model and is inactive by default. The presentation is intended to support a subsequent Python implementation of the same algorithms; the current implementation is MATLAB.
+\end{abstract}
+\vfill
+\noindent\small Implementation companion. Monetary quantities are in model units unless an annual wage target supplies a currency conversion. The toolkit covers illustrative city experiments; it does not reproduce the complete empirical pipeline. 
+\end{titlepage}
+\pagenumbering{arabic}
+\hypersetup{pageanchor=true}
+\appendix
+\section{The ABSJ2027 toolkit}
+\subsection{Equilibrium}
+The economy consists of a circular city and its rural hinterland. Let $u\in\{R,C\}$ denote residential and commercial use, and let $x\geq0$ denote distance in kilometres from the centre. Available land in a radial interval is $\dd L(x)=2\pi\ell x\dd x$. The equilibrium state is wage $y$, urban utility $\Ubar$, and density $\dens$. Regional population $\Nbar$ and the rural-utility primitive $\Utilde$ govern urban population:
+\begin{align}
+ N&=\Nbar\frac{\Ubar^\zeta}{\Ubar^\zeta+\Utilde}, &
+ \dens&=\frac{N}{\pi\ell x_1^2}. \label{eq:population}
+\end{align}
+Rural utility itself is $\Utilde^{1/\zeta}$. Thus the urban-population elasticity with respect to urban utility is $\zeta(1-N/\Nbar)$.
+
+The height-independent productivity and amenity shifters are
+\begin{align}
+ A^C(x)&=a^C_{\mathrm{loc}}(x)\bar a^C N^{\beta^C}
+ e^{-\tau^C\max\{0,x-\underline x^C\}},\label{eq:AC}\\
+ A^R(x)&=a^R_{\mathrm{loc}}(x)\bar a^R N^{\beta_P}\dens^{\beta_D}
+ e^{-\tau^R\max\{0,x-\underline x^R\}}.\label{eq:AR}
+\end{align}
+Here $\beta_D$ is the paper's $\beta^R$, called \code{beta_dens_R} in MATLAB. The additional population elasticity $\beta_P$ is \code{beta_R}; its default is zero. Local multipliers equal one in the stylized baseline.
+
+It is useful to define the demand shifters appearing directly in the code:
+\begin{align}
+ q^C(x)&=A^C(x)^{\frac1{1-\alpha^C}}y^{-\frac{\alpha^C}{1-\alpha^C}},\label{eq:qC}\\
+ q^R(x)&=\left[\frac{A^R(x)y}{\Ubar}\right]^{\frac1{1-\alpha^R}}.\label{eq:qR}
+\end{align}
+The variables \code{a_x_C} and \code{a_x_R} store $q^C$ and $q^R$. These equal $(1+\omega^u)$ times the paper's height-invariant average floor-space rent shifter. They exclude the height component of amenities or productivity.
+
+A developer's construction cost is $c^uS^{1+\theta^u}$. Optimal unconstrained height, capped height, and the associated land bid satisfy
+\begin{align}
+ S^{u,*}(x)&=\left[\frac{q^u(x)}{c^u(1+\theta^u)}\right]^{\frac1{\theta^u-\omega^u}}, &
+ \widetilde S^u(x)&=\min\{S^{u,*}(x),\bar S^u\},\label{eq:height}\\
+ r^u(x)&=\frac{q^u(x)}{1+\omega^u}\widetilde S^u(x)^{1+\omega^u}
+       -c^u\widetilde S^u(x)^{1+\theta^u}.\label{eq:landbid}
+\end{align}
+The restriction $\theta^u>\omega^u$ ensures a finite unconstrained height.
+\clearpage
+\subsubsection{Land allocation and market clearing}
+Within the permitted urban region, land is assigned to the highest bid among $r^C(x)$, $r^R(x)$, and agricultural rent $r^a$. Write $\Cset$, $\Rset$, and $\Aset$ for the resulting land-use sets. The growth boundary $x_{1,\max}$ imposes agricultural use whenever $x>x_{1,\max}$. It is disabled when $x_{1,\max}=\infty$.
+
+The commercial boundary $x_0$ separates the CBD and the residential zone; $x_1$ is the outermost residential radius. In the continuous model, an interior $x_0$ satisfies $r^C(x_0)=r^R(x_0)$. An unconstrained fringe satisfies $r^R(x_1)=r^a$. At a binding growth boundary, the residential land bid may exceed $r^a$. The growth limit must therefore enter land allocation before aggregates and equilibrium updates are calculated. It is not an ex-post truncation of a solved city.
+
+Realized height $S^u$ equals $\widetilde S^u$ on land assigned to use $u$. Sectoral integrals below exclude other land. Average floor-space rent is
+\begin{equation}
+ \bar p^u(x)=\frac{q^u(x)}{1+\omega^u}S^u(x)^{\omega^u}.\label{eq:rent}
+\end{equation}
+Employment, housing per resident, and residents in each interval obey
+\begin{align}
+ L(x)\dd x&=\frac{\alpha^C}{1-\alpha^C}
+  \frac{\bar p^C(x)S^C(x)}{y}\dd L(x),\label{eq:labour}\\
+ \bar f^R(x)&=\frac{(1-\alpha^R)y}{\bar p^R(x)}, &
+ n(x)\dd x&=\frac{S^R(x)}{\bar f^R(x)}\dd L(x).\label{eq:housing}
+\end{align}
+Market clearing requires $\int_{\Cset}L(x)\dd x=N=\int_{\Rset}n(x)\dd x$. Conditional on the current guesses, the solver constructs the following predictions:
+\begin{align}
+ \hat y&=\frac{\alpha^C}{(1-\alpha^C)N}
+       \int_{\Cset}\bar p^C(x)S^C(x)\dd L(x),\label{eq:yhat}\\
+ J^R&=\int_{\Rset}A^R(x)^{\frac1{1-\alpha^R}}
+                  S^R(x)^{1+\omega^R}\dd L(x),\label{eq:J}\\
+ \widehat{\Ubar}&=\left[\frac{y^{\frac1{1-\alpha^R}}J^R}
+ {(1+\omega^R)(1-\alpha^R)yN}\right]^{1-\alpha^R}, &
+ \widehat{\dens}&=\frac{N}{\pi\ell x_1^2}.\label{eq:Uhat}
+\end{align}
+The equilibrium routine iterates all three state variables. The standard concentric specification requires $\tau^C/(1-\alpha^C)>\tau^R/(1-\alpha^R)$. Arbitrary spatial multipliers can violate this structure; disconnected urban systems are outside the documented scope of this toolkit.
+\clearpage
+\subsection{Codebook of inputs and objects}
+\begin{table}[h!]
+\centering\caption{Structural parameters and fundamentals}\label{tab:inputs}
+\small
+\begin{tabular}{L{22mm}L{42mm}L{73mm}}
+\toprule Object & MATLAB field & Meaning and default\\\midrule
+$\alpha^R,\alpha^C$ & \code{alpha_R}, \code{alpha_C} & Non-housing spending and labour shares: $0.66$, $0.85$.\\
+$\beta_D$ & \code{beta_dens_R} & Density elasticity of amenities: $-0.1053554548$.\\
+$\beta_P,\beta^C$ & \code{beta_R}, \code{beta_C} & Population elasticities: $0$, $0.03$.\\
+$\tau^R,\tau^C$ & \code{tau_R}, \code{tau_C} & Spatial decay per km: $0.016$, $0.014$.\\
+$\underline x^R,\underline x^C$ & \code{x_core_R}, \code{x_core_C} & Flat core radii: $1$, $1$ km.\\
+$\omega^R,\omega^C$ & \code{omega_R}, \code{omega_C} & Height elasticities of rent: $0.07$, $0.03$.\\
+$\theta^R,\theta^C$ & \code{theta_R}, \code{theta_C} & Height elasticities of unit cost: $0.55$, $0.50$.\\
+$c^R,c^C$ & \code{c_R}, \code{c_C} & Construction-cost scales: $150$, $150$.\\
+$\bar a^R,\bar a^C$ & \code{a_bar_R}, \code{a_bar_C} & Fundamental amenity/productivity: $2$, $2$.\\
+$r^a$ & \code{r_a} & Agricultural land rent: $50$.\\
+$\ell$ & \code{ell} & Developable land share: $0.5$.\\
+$\zeta$ & \code{zeta} & Preference heterogeneity: $6.4$; requires $\zeta>0$.\\
+$T$ & \code{T} & Tall-height threshold: $2.9605069279$.\\
+$\bar S^R,\bar S^C$ & \code{S_bar_R}, \code{S_bar_C} & Height limits: $\infty$, $\infty$.\\
+$x_{1,\max}$ & \code{x1_max} & Maximum urban radius: $\infty$ km.\\
+$a^R_{\mathrm{loc}},a^C_{\mathrm{loc}}$ & \code{a_rand_R}, \code{a_rand_C} & Positive local multipliers in \code{fund}; default vectors of ones.\\
+$\Nbar$ & \code{N_bar} & Regional population, calibrated to $N^{\mathrm{target}}/\mu$.\\
+$\Utilde$ & \code{U_tilde} & Rural utility to the power $\zeta$, inverted to match $\mu$.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\small\emph{Notes:} Defaults preserve replication values, including $1-\alpha^R=0.34$ rather than the rounded housing share $0.33$ in the paper. Estimated constants are stored at full precision in MATLAB. The default $\theta^R=\theta^C+0.05$ initializes the baseline; subsequent changes to these fields are independent. Heights and $T$ are effective floor-area ratios (floor space per unit developable land), not literal storey counts. Construction-cost $c^u$ is the coefficient multiplying $S^{1+\theta^u}$ in the code. Exact closed-city $\zeta=0$ is not supported.
+\normalsize
+\clearpage
+\begin{table}[h!]
+\centering\caption{Empirical targets and equilibrium objects}\label{tab:objects}
+\small
+\begin{tabular}{L{24mm}L{41mm}L{72mm}}
+\toprule Object & MATLAB name & Description\\\midrule
+\multicolumn{3}{l}{\emph{Empirical targets}}\\
+$N^{\mathrm{target}}$ & \code{population} & Urban population: $3{,}000{,}000$.\\
+$\mu$ & \code{urban_share} & Urban share of regional population: $0.5$, strictly between zero and one.\\
+$g$ & \code{height_gap} & Unrealized tall floor-space fraction: $0$; \code{[]} retains direct sector caps.\\\midrule
+\multicolumn{3}{l}{\emph{Equilibrium state and local objects}}\\
+$y,\Ubar$ & \code{y}, \code{U_bar} & Wage and urban utility.\\
+$\dens$ & \code{density} & Urban population per developable square kilometre.\\
+$N$ & \code{N} & Endogenous urban population.\\
+$x_0,x_1$ & \code{x0}, \code{x1} & CBD boundary and residential fringe (km).\\
+$q^R,q^C$ & \code{a_x_R}, \code{a_x_C} & Demand shifters, Eqs.~\eqref{eq:qC}--\eqref{eq:qR}.\\
+$S^R,S^C$ & \code{S_x_R}, \code{S_x_C} & Realized sectoral building heights.\\
+$\bar p^R,\bar p^C$ & \code{p_bar_x_R}, \code{p_bar_x_C} & Local average floor-space rents.\\
+$r^R,r^C$ & \code{r_x_R}, \code{r_x_C} & Potential land bids by sector.\\
+$\Cset,\Rset,\Aset$ & \code{U} & Land-use codes: commercial $1$, residential $2$, agricultural $3$.\\\midrule
+\multicolumn{3}{l}{\emph{Selected aggregate objects}}\\
+$F^R,F^C$ & \code{F_R}, \code{F_C} & Sectoral floor space, $\int_u S^u\dd L$.\\
+$H$ & \code{F_tallE} & Floor space exceeding threshold $T$, Eq.~\eqref{eq:tall}.\\
+$\mathrm{GDP}$ & \code{GDP} & Urban output $yN/\alpha^C$.\\
+$V$ & \code{V} & Welfare including city and hinterland.\\
+$\mathrm{LV}$ & \code{LV} & Total land rent over the numerical region.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Conditional on the construction-cost level, the three targets identify regional population, rural utility, and, when requested, a common height cap. An additional residential floor-space target can identify the cost level, as described in Section~\ref{sec:floor_target}. They do not separately estimate productivity or amenity fundamentals. Editing baseline inputs and rerunning quantifies a new baseline. A counterfactual instead preserves the calibrated primitives except for explicit changes, allowing urban population to respond.
+
+\noindent Wages, rents, and output are expressed in model units. Neither these targets nor the toolkit supply an independent currency conversion.
+\clearpage
+\subsection{Aggregate outcomes}
+GDP is urban output, rather than the wage bill. Welfare and total land rent include the rural hinterland:
+\begin{align}
+ \mathrm{GDP}&=\frac{yN}{\alpha^C}, & \text{wage bill}&=yN,\label{eq:gdp}\\
+ V&=(\Utilde+\Ubar^\zeta)^{1/\zeta},\label{eq:welfare}\\
+ \mathrm{LV}&=\int_{\Cset}r^C\dd L+\int_{\Rset}r^R\dd L+
+                       \int_{\Aset}r^a\dd L.\label{eq:LV}
+\end{align}
+The last integral extends to the fixed numerical radius, 100 km by default. This radius is distinct from the urban growth boundary and should remain unchanged across baseline and counterfactual.
+
+Define resident- and employment-weighted averages by
+\begin{equation}
+ \langle z\rangle_R=\frac{\int_{\Rset}z(x)n(x)\dd x}{\int_{\Rset}n(x)\dd x},
+ \qquad
+ \langle z\rangle_C=\frac{\int_{\Cset}z(x)L(x)\dd x}{\int_{\Cset}L(x)\dd x}.
+ \label{eq:weights}
+\end{equation}
+The reporting functions retain the following replication statistics:
+\begin{align}
+ p_R&=\langle\bar p^R\rangle_R, & p_C&=\langle\bar p^C\rangle_C,\label{eq:meanrent}\\
+ \mathrm{CC}&=\langle e^{\tau^R x}\rangle_R, &
+ \mathrm{DD}&=\dens^{\beta_D},\label{eq:indices}\\
+ \mathrm{HA}&=\langle (S^R)^{\omega^R(1-\alpha^R)}\rangle_R.\label{eq:HA}
+\end{align}
+The commuting-cost measure is an index, not a monetary cost or travel time. It uses $x$, as in the replication, rather than the core-adjusted distance in Eq.~\eqref{eq:AR}. Changes in these weighted mean indices do not provide an exact finite-change decomposition of utility; utility is solved from equilibrium.
+
+Sectoral floor space is $F^u=\int_u S^u\dd L$. Two tall-floor-space measures must be distinguished:
+\begin{align}
+ F_{\mathrm{tall}}&=\sum_{u\in\{R,C\}}\int_u S^u(x)\mathbf1\{S^u(x)>T\}\dd L(x),\\
+ H=F_{\mathrm{tallE}}&=\sum_{u\in\{R,C\}}\int_u\max\{S^u(x)-T,0\}\dd L(x).
+ \label{eq:tall}
+\end{align}
+The height-gap inversion uses the second measure. If $H^*$ is its value after removing both height limits while retaining all other calibrated fundamentals, then
+\begin{equation}
+ g=1-H/H^*.\label{eq:gap}
+\end{equation}
+If $H^*=0$, the toolkit records zero with an identification flag and rejects a positive height-gap target.
+\clearpage
+\subsection{Algorithms}
+The pseudocode below is language-independent. Function names map directly to separate files in \code{MATLAB/functions}. Guesses are inputs to an equilibrium evaluation; predictions are the values implied by that evaluation. Warm starts pass a previously solved state explicitly.
+\subsubsection{City creation and conditional equilibrium}
+
+\begin{algorithm2e}[H]
+\caption{Create the numerical city: \texttt{CREATE\_CITY}}\label{alg:create}
+\KwData{Numerical radius $R_{\mathrm{grid}}$, spacing $h$, baseline parameters.}
+Create symmetric coordinates $\mathbf x=-R_{\mathrm{grid}}:h:R_{\mathrm{grid}}$\;
+Retain non-negative distances $D$ for model computations\;
+Set $\delta=(\max\mathbf x-\min\mathbf x)/\#\mathbf x$\;
+Compute geographic cell areas $G_i=2\pi\delta(D_i+\delta/2)$\;
+Initialize $a^R_{\mathrm{loc},i}=a^C_{\mathrm{loc},i}=1$\;
+\KwResult{\texttt{fund}: coordinates, geographic cell areas, local multipliers.}
+\end{algorithm2e}
+
+
+\noindent The grid defaults to $R_{\mathrm{grid}}=100$ km and $h=0.01$ km. The replication uses $\delta$, rather than $h$, in its quadrature weights. The toolkit preserves this convention. Developable cell area is $\ell G_i$; reported urban area remains $\pi\ell x_1^2$.
+
+
+\begin{algorithm2e}[H]
+\caption{Evaluate endogenous objects: \texttt{SOLVER}}\label{alg:solver}
+\KwData{Primitives, \texttt{fund}, guesses $\{y,\Ubar,\dens\}$.}
+Compute $N$ using Eq.~\eqref{eq:population}\;
+Compute $A^u(x)$ and $q^u(x)$ using Eqs.~\eqref{eq:AC}--\eqref{eq:qR}\;
+Compute optimal and capped heights using Eq.~\eqref{eq:height}\;
+Compute land bids using Eq.~\eqref{eq:landbid}\;
+Assign each location to the use with the highest land bid\;
+Impose agricultural use at every $D_i>x_{1,\max}$\;
+Recover $x_0$ and the outermost residential radius $x_1$\;
+Restrict realized heights and floor-space rents to occupied sectors\;
+Compute floor space, employment, and residents using Eqs.~\eqref{eq:labour}--\eqref{eq:housing}\;
+Compute $\hat y$, $\widehat{\Ubar}$, and $\widehat{\dens}$ using Eqs.~\eqref{eq:yhat}--\eqref{eq:Uhat}\;
+Compute welfare, land rent, and the remaining aggregate statistics\;
+\KwResult{State predictions, local profiles, and aggregate outcomes.}
+\end{algorithm2e}
+
+\clearpage
+\subsubsection{Equilibrium iteration}
+
+\begin{algorithm2e}[H]
+\caption{Find equilibrium: \texttt{EQFIND}}\label{alg:eqfind}
+\KwData{Primitives, \texttt{fund}, numerical controls, optional initial state.}
+Set $s=(y,\Ubar,\dens)$ to the initial state, or $(1,0.2,1000)$\;
+\For{$k=1,\ldots,K_{\max}$}{
+ Evaluate Algorithm~\ref{alg:solver} at $s$, obtaining predictions $\hat s$\;
+ Clip each component: $\hat s_j\leftarrow\max\{0.9s_j,\min\{1.1s_j,\hat s_j\}\}$\;
+ Set $e_j=|\hat s_j-s_j|/\max\{|s_j|,10^{-8}\}$ for all components\;
+ \If{$\max_j e_j<\epsEQ$}{
+  Check finite positive outcomes, both urban sectors, and the grid edge\;
+  \Return the current state $s$ and its evaluated outcomes\;
+ }
+ Compute replication update weights $\lambda_j(k)$\;
+ Update each component: $s_j\leftarrow(1-\lambda_j)s_j+\lambda_j\hat s_j$\;
+}
+Report nonconvergence as an error\;
+\KwResult{Equilibrium state, local profiles, aggregates, iteration count.}
+\end{algorithm2e}
+
+
+The default tolerance is $\epsEQ=0.001$ and $K_{\max}=1000$. Default ``rich'' damping combines large early updates with smaller late updates. For component $j$, the weight is
+\begin{equation}
+ \lambda_j(k)=A+\frac{b_j-A}{[1+\exp\{-B(k-M)\}]^{1/v}},
+ \label{eq:damping}
+\end{equation}
+where $A=0.98$, $B=1$, $M=8$, $v=1$, and
+\begin{equation}
+ b_y=\min\{0.01,e_y\},\qquad b_{\Ubar}=0.05,\qquad b_{\dens}=0.25.
+\end{equation}
+These weights, clipping, and the convergence criterion follow the replication. A returned state satisfies the numerical tolerance, not exact analytical equality. Iteration exhaustion never counts as convergence.
+
+\subsubsection{Inverting the urbanization target}
+Conditional on $\Ubar$, the rural primitive that rationalizes target share $\mu$ is
+\begin{equation}
+ \Utilde_{\mathrm{new}}=\Ubar^\zeta\frac{1-\mu}{\mu}.
+ \label{eq:ruralinvert}
+\end{equation}
+Because $\Ubar$ responds to $\Utilde$, inversion requires an outer iteration. Algorithm~\ref{alg:rural} returns the primitive actually used in its equilibrium. This avoids the replication routine's extra final update after reaching the target.
+\clearpage
+
+\begin{algorithm2e}[H]
+\caption{Invert rural utility: \texttt{FINDUtilde}}\label{alg:rural}
+\KwData{Primitives, \texttt{fund}, target $\mu$, optional initial equilibrium.}
+\For{$k=1,\ldots,K_{\max}$}{
+ Solve equilibrium at the current $\Utilde$ using Algorithm~\ref{alg:eqfind}\;
+ Compute the implied share $\hat\mu=N/\Nbar$\;
+ \If{$|\hat\mu-\mu|/\mu<\varepsilon_\mu$}{
+  \Return the current $\Utilde$ and its corresponding equilibrium\;
+ }
+ Compute $\Utilde_{\mathrm{new}}$ using Eq.~\eqref{eq:ruralinvert}\;
+ Dampen the rural-utility update using the replication weights\;
+ Retain the solved equilibrium as the next warm start\;
+}
+Report failure to match the urban share\;
+\KwResult{Calibrated rural primitive and equilibrium at that primitive.}
+\end{algorithm2e}
+
+
+The default share tolerance is $\varepsilon_\mu=0.001$. Rural inversion uses Eq.~\eqref{eq:damping} with $A=0.99$, $M=22$, $B=v=1$, and the state-dependent late weight $b=0.5/[1+\exp\{1-1000|\Utilde_{\mathrm{new}}-\Utilde|\}]$. This outer iteration leaves other primitives fixed.
+
+\subsubsection{Inverting the height gap}
+
+\begin{algorithm2e}[H]
+\caption{Height-gap objective: \texttt{HG\_obj}}\label{alg:hg}
+\KwData{Candidate common cap $H_L$, target gap $g$, target share $\mu$, primitives.}
+Reject invalid candidates with $H_L<T$ or $H_L\leq0$\;
+Set $\bar S^R=\bar S^C=H_L$\;
+Use Algorithm~\ref{alg:rural} to match $\mu$ and record $H=F_{\mathrm{tallE}}$\;
+Set both height caps to $\infty$ in a copy of the calibrated primitives\;
+Retain $\Utilde$, $\Nbar$, construction parameters, and $x_{1,\max}$\;
+Solve the unrestricted-height equilibrium and record $H^*$\;
+\eIf{$H^*>0$}{Compute $\hat g=1-H/H^*$\;}{Set $\hat g=0$ and flag the gap as unidentified\;}
+\KwResult{Absolute objective $|\hat g-g|$, simulated gap, identification status.}
+\end{algorithm2e}
+
+
+Here ``unrestricted'' refers only to height. The same horizontal growth boundary applies to the constrained and unrestricted-height cities. Construction-cost elasticities remain independently specified throughout the inversion.
+\clearpage
+
+\begin{algorithm2e}[H]
+\caption{Quantify at a given cost level: \texttt{QUANTIFY\_CITY}}\label{alg:quantify}
+\KwData{Primitives, \texttt{fund}, $N^{\mathrm{target}}$, $\mu$, optional gap target $g$.}
+Set $\Nbar=N^{\mathrm{target}}/\mu$\;
+Initialize $\Utilde=0.2^\zeta(1-\mu)/\mu$\;
+\uIf{either supplied sector cap is finite, or the gap target is empty}{Retain both sector-specific caps and skip height-gap matching\;}
+\uElseIf{$g=0$}{Set $\bar S^R=\bar S^C=\infty$\;}
+\uElseIf{$g=1$}{Set $\bar S^R=\bar S^C=T$\;}
+\Else{Minimize Algorithm~\ref{alg:hg} over $H_L$ using \texttt{fminsearch}\;
+ Set both sector caps to the selected $H_L$\;}
+At the chosen caps, invert rural utility with Algorithm~\ref{alg:rural}\;
+Verify population and, when not overridden, the height-gap target\;
+Package the calibrated inputs, solved equilibrium, and diagnostics\;
+\KwResult{Baseline city with calibrated fundamentals and saved outcomes.}
+\end{algorithm2e}
+
+
+The absolute height-gap tolerance is $0.01$ in fractional units. Interior-gap optimization uses a cap tolerance of $0.01$, at most 250 iterations, and at most 300 objective evaluations. Exact zero and one targets use the endpoints above, replacing the replication's approximate 1\% and 99\% shortcuts. Positive targets are rejected when unrestricted tall floor space is zero.
+
+\subsubsection{Counterfactual solution}
+A counterfactual starts from the quantified baseline. Absolute changes replace values; percentage changes apply to the saved baseline value. Regional population and rural utility remain fixed unless explicitly changed. Baseline empirical targets are not re-inverted.
+
+\begin{algorithm2e}[H]
+\caption{Change primitives and solve: \texttt{APPLY\_CHANGES}, \texttt{COUNTERFACTUAL}}\label{alg:cf}
+\KwData{Saved baseline and optional absolute or percentage changes.}
+\If{no changes are supplied}{\Return an empty counterfactual\;}
+Copy the calibrated baseline primitives and local fundamentals\;
+Reject unknown fields and fields included in both change operations\;
+Apply each absolute change by replacement\;
+Apply each percentage change as $v_{\mathrm{new}}=v_{\mathrm{baseline}}(1+X/100)$\;
+Reject percentage changes to zero or infinite baseline values\;
+Validate the changed inputs jointly\;
+Solve with Algorithm~\ref{alg:eqfind}, using the baseline as a warm start\;
+\KwResult{Counterfactual equilibrium, without recalibrating baseline targets.}
+\end{algorithm2e}
+
+\clearpage
+\subsubsection{Reporting and exports}
+
+\begin{algorithm2e}[H]
+\caption{Package and display results: \texttt{PACK\_RESULT}, \texttt{RESULTS}, \texttt{SAVE\_RESULTS}}\label{alg:report}
+\KwData{Baseline and optional counterfactual equilibrium.}
+Add GDP, wage bill, density, density amenity, urban share, and total floor space to saved aggregates\;
+Record target fit and market-clearing diagnostics\;
+Build a table with baseline levels and units\;
+\If{a counterfactual is present}{
+ Append counterfactual levels\;
+ Compute $100(v_{\mathrm{CF}}/v_{\mathrm{baseline}}-1)$ where defined\;
+}
+Plot saved heights, floor-space rents, and land bids\;
+Show land-use zones and boundaries for each scenario\;
+\If{export is requested}{Save the table as CSV, results as MAT, and figures as PNG\;}
+\KwResult{Summary table, figure handles, and optional exported files.}
+\end{algorithm2e}
+
+
+The graph wrappers \code{GHEIGHT}, \code{GBIDRENT}, and \code{GLANDRENT} call \code{PLOT_PROFILE}. They plot saved equilibrium profiles, preserving the user's local fundamentals. They do not invoke a new solver evaluation. Height and floor-space rent are shown on occupied sectoral land; land bids show potential bids by sector. An empty counterfactual produces baseline-only figures and statistics.
+
+\subsection{Using the master script}
+Run \code{MASTER_PAPER.m} or \code{MASTER_EMPIRICAL.m} in \code{MATLAB/scripts}; \code{MASTER.m} delegates to the paper version. The user-facing inputs are baseline parameters and fundamentals, empirical moments, and optional counterfactual changes. The execution sequence is
+\begin{equation*}
+ \texttt{CREATE\_CITY}\ \longrightarrow\ \texttt{QUANTIFY}\
+ \longrightarrow\ [\texttt{COUNTERFACTUAL}]\ \longrightarrow\ \texttt{RESULTS}.
+\end{equation*}
+For example, to increase productivity and reduce residential construction cost:
+\begin{singlespace}
+\begin{verbatim}
+changes = struct();          % Leave empty for baseline only.
+changes.pct.a_bar_C = 10;    % Productivity increases by 10%.
+changes.pct.c_R = -10;       % Residential cost falls by 10%.
+\end{verbatim}
+\end{singlespace}
+Each change is relative to the saved baseline, so repeated solution does not compound it. Reducing $c^R$ lowers construction cost at every height; changing $\theta^R$ changes how unit cost increases with height. These are distinct experiments.
+\clearpage
+To combine an urban growth boundary and height constraints:
+\begin{singlespace}
+\begin{verbatim}
+changes = struct();
+changes.set.x1_max = 25;    % Maximum urban radius in km.
+changes.set.S_bar_C = 5;    % Commercial effective-height cap.
+changes.set.S_bar_R = 5;    % Residential effective-height cap.
+\end{verbatim}
+\end{singlespace}
+Use absolute values for limits initially equal to infinity, zero-valued parameters, and elasticities for which a percentage change would be ambiguous. No field may appear in both \code{set} and \code{pct}. Any finite \code{params.S_bar_C} or \code{params.S_bar_R} overrides \code{targets.height_gap}; both sector limits are then retained as entered. With both caps infinite, a numeric gap is matched and an empty gap leaves the city unrestricted. These height limits are effective floor-area ratios: a limit of five permits five square metres of floors per square metre of developable land, not necessarily five storeys.
+
+\subsection{Implementation and validation}
+\subsubsection{Relationship to the replication code}
+The toolkit preserves the core solver's arithmetic and aggregation order. The growth-boundary extension assigns \code{U(D > params.x1_max) = 3} before boundaries and aggregates are calculated. It does not set the developable share $\ell$ to zero. The two originally hard-coded one-kilometre core radii are parameters with defaults of one. With these defaults and \code{x1_max = Inf}, the original conditional solver is recovered.
+
+The equilibrium routine preserves clipping and damping while replacing implicit workspace state with explicit arguments. Rural inversion checks the target before its final update, so the returned primitive belongs to the returned equilibrium. Its starting value is consistent with the target share. Baseline quantification does not depend on a preceding estimation run.
+
+\code{MASTER.m} contains no function definitions. All named functions reside in individual files in \code{MATLAB/functions}; anonymous optimization handles only bind arguments to separate named objective functions. The toolkit omits Stata preprocessing, empirical estimation and bootstrap batches, all-city loops, and global aggregation. User population and urbanization targets are not silently capped. Changing structural parameters does not re-estimate other constants.
+
+\subsubsection{Numerical checks and limits}
+\code{VALIDATE_INPUTS} checks parameter domains, the ordering of spatial gradients, and change syntax. \code{EQFIND} rejects nonconvergence, invalid equilibria, missing commercial or residential sectors, and an unconstrained city at the grid edge. A larger grid requires baseline recalibration; it should not change between scenarios because it determines the agricultural land-rent domain.
+\clearpage
+\begin{table}[h!]
+\centering\caption{Function inventory}\label{tab:functions}
+\small
+\begin{tabular}{L{58mm}L{82mm}}
+\toprule Files in \texttt{MATLAB/functions} & Role\\\midrule
+\code{CREATE_CITY} & Construct coordinates, integration weights, and local fundamentals.\\
+\code{NUMERICS} & Supply grid, iteration, damping, and inversion controls.\\
+\code{VALIDATE_INPUTS} & Check inputs and domains.\\
+\code{SOLVER} & Evaluate the model conditional on the state.\\
+\code{EQFIND} & Iterate to equilibrium.\\
+\code{FINDUtilde} & Invert the urbanization moment.\\
+\code{HG_obj} & Evaluate the height-gap objective.\\
+\code{QUANTIFY} & Dispatch baseline calibration with or without a floor-space target.\\
+\code{QUANTIFY_CITY}, \code{MATCH_FLOORSPACE} & Match city moments conditional on cost, and calibrate a common cost multiplier to floor space.\\
+\code{APPLY_CHANGES} & Apply absolute or percentage changes.\\
+\code{COUNTERFACTUAL} & Solve the changed city.\\
+\code{PACK_RESULT} & Add derived outcomes and diagnostics.\\
+\code{RESULTS} & Create summary statistics and figures.\\
+\code{GHEIGHT}, \code{GBIDRENT}, \code{GLANDRENT} & Select height, floor-space rent, or land-bid profiles.\\
+\code{PLOT_PROFILE} & Draw profiles and land-use boundaries.\\
+\code{SAVE_RESULTS} & Export CSV, XLSX, TEX, MAT, PNG, and PDF files.\\
+\code{WRITE_TABLE_TEX}, \code{TEX_ESCAPE} & Format the exported LaTeX table and its labels.\\
+\code{REPORT_UNITS}, \code{REPORT_CITY} & Convert displayed units and compute derived reporting statistics.\\
+\code{STATUS} & Display numerical progress, with optional quiet mode.\\
+\code{VALIDATE_TOOLKIT} & Run the toolkit's regression and behavior checks.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The validation suite covers the baseline-only master, graphics, GDP, moment and market fit, unchanged counterfactuals, all three illustrative paper experiments, joint horizontal and vertical limits, interior height-gap inversion, direct-cap mode, independent parameter changes, and invalid-input rejection. With an optional read-only replication path, it compares isolated reference copies against the original solver and baseline inversion.
+
+Eight validation groups passed in MATLAB R2024a Update 2. At the tested unrestricted state, original and toolkit conditional solver outputs were exactly identical; baseline inversion also matched exactly. The maximum difference from the rounded illustrative reference table was $0.095$ percentage points, below the $0.6$ acceptance threshold. These checks do not establish convergence for every possible parameter combination.
+
+See \code{VALIDATION.md} for the recorded checks, \code{SOURCE_MAP.md} for provenance and implementation decisions, and \code{SOURCE_SHA256.json} for source hashes. MATLAB and the Statistics and Machine Learning Toolbox are required by the current implementation, which retains \code{nansum}. The Python directories are reserved for a later implementation of these algorithms.
+
+\clearpage
+\subsection{Matching residential floor space}\label{sec:floor_target}
+The optional \code{targets.floor_space_per_resident} targets residential square metres per model resident; its default is empty (disabled). Starting costs $c^R_0=c^C_0=150$ imply about 956 square metres in the unrestricted baseline. A common multiplier $k$ sets $c^R=kc^R_0$ and $c^C=kc^C_0$, preserving their initial ratio. An empty target retains both supplied costs. This calibrates physical quantities rather than changing reporting units.
+
+At each conditional city solution, compute and predict an update:
+\begin{equation}
+ \bar f_{\mathrm{sim}}=10^6\frac{\int_{\Rset}\bar f^R(x)n(x)\dd x}{\int_{\Rset}n(x)\dd x},
+ \qquad
+ \frac{k_{\mathrm{new}}}{k}=\left(\frac{\bar f_{\mathrm{sim}}}{\bar f_{\mathrm{target}}}\right)^{1+\theta^R}.
+\end{equation}
+This residential scaling rule is a numerical prediction, not an exact joint-sector solution. Each candidate re-solves both sectors and re-matches the other active moments before checking the actual floor-space fit.
+
+\begin{algorithm2e}[H]
+\caption{Match residential floor space: \texttt{MATCH\_FLOORSPACE}}
+\KwData{Primitives, city grid, moments, positive $\bar f_{\mathrm{target}}$.}
+Store starting costs $c^R_0,c^C_0$ and initialize $k=1$\;
+\For{at most 20 iterations}{
+ Set $c^R=kc^R_0$, $c^C=kc^C_0$ and run Algorithm~\ref{alg:quantify}\;
+ Compute resident-weighted $\bar f_{\mathrm{sim}}$ in square metres\;
+ \If{$|\bar f_{\mathrm{sim}}/\bar f_{\mathrm{target}}-1|<0.001$}{
+  \Return the calibrated baseline and moment-fit diagnostics\;
+ }
+ Update $k$ using the rule, bounding its change factor to $[0.01,100]$\;
+ Retain density as a warm start; predict wage and utility responses to both sectors' cost changes\;
+}
+Report nonconvergence rather than accepting an unmatched target\;
+\KwResult{Baseline matching floor space and the other active moments.}
+\end{algorithm2e}
+
+Manual FAR limits supersede height-gap calibration. Counterfactuals inherit both calibrated costs; explicit changes remain independent. In the earlier 50-square-metre calibration example, $k\simeq55.85$ gives about 50.04 square metres per resident. Height-gap calibration is disabled for this empirical quantification because the retained threshold $T$ belongs to the paper parameterization. Thresholds are not silently changed to force a fit. Core equations are unchanged, but paper-reference checks disable this additional calibration.
+
+
+\clearpage
+\subsection{Inverting the optional empirical primitives}\label{sec:optional_inversion}
+The empirical example jointly fits residential rent (or floor-space consumption), total geographic urban area and central CBD FAR. Wage fixes monetary reporting units; it is not a fourth primitive in the search. An empty target omits its search coordinate and retains the supplied primitive. Height-gap inversion is disabled because $T$ belongs to the paper parameterization; manual height limits remain applicable.
+
+For active coordinates, the code uses $k_j=\exp(z_j-1)$:
+\begin{equation}
+ (c^R,c^C)=k_c(c^R_0,c^C_0),\qquad
+ r_a=k_a r_{a0},\qquad
+ (\tau^R,\tau^C)=k_\tau(\tau^R_0,\tau^C_0).
+\end{equation}
+Thus each common multiplier preserves its starting sectoral ratio. Coordinates are ordered housing, area, then CBD FAR. These primitives affect the moments jointly; the initialization rules below are numerical predictions, not separate analytical inversions.
+
+\begin{algorithm2e}[H]
+\caption{Initialize optional primitives: \texttt{MATCH\_CITY\_TARGETS}}\label{alg:optional_init}
+\KwData{Starting primitives $\mathcal P_0$, grid, population and urbanization targets; active optional moments $m^*$.}
+Reject simultaneous rent and consumption targets; require positive wage for rent\;
+Require positive starting taus for CBD FAR; reject a CBD target at or above a finite manual commercial cap\;
+Reject an area target outside the grid or growth boundary\;
+Solve the starting city with Algorithm~\ref{alg:quantify}; save state $(y_s,\Ubar_s,\dens_s)$ and moments $m_s$\;
+Create one coordinate per active multiplier and initialize each to one\;
+\If{housing is targeted}{
+ Set $R=\bar f_s/\bar f^*$ for consumption, or $R=\bar p^{R*}/\bar p^R_s$ for rent\;
+ Set $z_c^{(0)}=1+(1+\theta^R)\log R$\;
+}
+\If{area is targeted}{Set $z_a^{(0)}=1+\log(A_s/A^*)$\;}
+\If{central CBD FAR is targeted}{
+ Set preliminary city $B$ to the starting city\;
+ \If{housing or area is also targeted}{
+  Run Algorithm~\ref{alg:optional_search} with the CBD target temporarily inactive\;
+  Set $B$ to that fitted city; replace active coordinates by $1+\log(c^R_B/c^R_0)$ and $1+\log(r_{aB}/r_{a0})$\;
+ }
+ Set $z_\tau^{(0)}=1+0.8\log(S^{C*}/S^C_B(0))$\;
+}
+\KwResult{Starting vector $z^{(0)}$ and original solved state $(y_s,\Ubar_s,\dens_s)$.}
+\end{algorithm2e}
+
+The preliminary call has its CBD target switched off and cannot recurse again. Its fitted cost and land-rent levels seed the final search. The warm-start reference remains the original solved state. The exponent 0.8 is a starting-guess heuristic, not a calibrated model elasticity.
+
+\clearpage
+\subsubsection*{Evaluating a candidate city}
+Each objective evaluation applies multipliers to the original supplied primitives, not to the previous candidate. For numerical initialization only, define
+\begin{equation}
+ h_R=k_c^{-1/(1+\theta^R)},\qquad
+ h_y=k_c^{-(1-\alpha^C)(1+\omega^C)/(1+\theta^C)}.
+\end{equation}
+The trial guesses are $y^{(0)}=y_s h_y$, $\Ubar^{(0)}=\Ubar_s h_y h_R^{(1+\omega^R)(1-\alpha^R)}$ and $\dens^{(0)}=\dens_s$. If housing is not targeted, $k_c=1$. These guesses do not impose an equilibrium: the existing solver determines wages, utility and density.
+
+\begin{algorithm2e}[H]
+\caption{Evaluate optional-target errors: \texttt{CITY\_TARGET\_OBJECTIVE}}\label{alg:optional_trial}
+\KwData{Candidate $z$, original primitives $\mathcal P_0$, original solved state, active targets.}
+Set inactive multipliers to one; set active $k_j=\exp(z_j-1)$\;
+Apply $k_c$ to both construction costs, $k_a$ to agricultural rent, and $k_\tau$ to both decay parameters\;
+Construct wage, utility and density guesses using the formulas above\;
+Run Algorithm~\ref{alg:quantify}: infer regional population from population/urbanization, invert rural utility and solve the equilibrium, retaining manual limits\;
+\If{a recognized trial equilibrium or inversion failure occurs}{
+ During search, return penalty $10^6+\sum_j z_j^2$\;
+ During final verification, propagate the failure\;
+}
+Propagate unexpected programming or input errors\;
+\If{consumption is targeted}{
+ Compute $\bar f=10^6\sum_x n_x\bar f_x^R/\sum_x n_x$\;
+}
+\If{rent is targeted}{
+ Compute $\bar p^R_{\mathrm{currency}}=\bar p^R_{\mathrm{model}}(w^*/y)/10^6$\;
+}
+\If{area is targeted}{Compute total geographic area $A=\pi x_1^2$\;}
+\If{CBD FAR is targeted}{Read central commercial FAR $S^C(0)$\;}
+Collect active simulated moments $m_j$ in housing--area--CBD order\;
+Compute $e_j=m_j/m_j^*-1$ and $Q(z)=\sum_j[\log(m_j/m_j^*)]^2$\;
+Report maximum relative error, both costs, agricultural rent and the tau multiplier\;
+\KwResult{Objective $Q$, candidate city and proportional moment errors $e$.}
+\end{algorithm2e}
+
+The sums use residential population weights and omit unoccupied cells. The model rent is the resident-weighted average from the solver. $w^*$ is the observed annual wage, in the same currency as the rent target. Total area includes non-developable land; CBD FAR is a central value rather than a district-wide mean.
+
+\clearpage
+\subsubsection*{Updating the primitives and accepting the inversion}
+The current implementation uses MATLAB's derivative-free Nelder--Mead search, \code{fminsearch}, rather than a Newton or Broyden update. It searches jointly over the active log coordinates. Reflection, expansion, contraction and shrink steps generate new candidates; each candidate invokes Algorithm~\ref{alg:optional_trial}. The iteration and evaluation limits bound computational work, not the positive primitive values themselves.
+
+\begin{algorithm2e}[H]
+\caption{Joint primitive inversion: \texttt{MATCH\_CITY\_TARGETS}}\label{alg:optional_search}
+\KwData{Original primitives, grid, numerical controls and active empirical targets.}
+Obtain $z^{(0)}$ and a solved reference state from Algorithm~\ref{alg:optional_init}\;
+Initialize the \code{fminsearch} simplex around $z^{(0)}$\;
+\While{the search has not stopped}{
+ Evaluate proposed candidates with Algorithm~\ref{alg:optional_trial}\;
+ Rank simplex vertices by $Q$\;
+ Use Nelder--Mead reflection, expansion, contraction or shrink to update the simplex\;
+ Stop early if the best $Q<[\log(1.002)]^2$\;
+ Otherwise apply \code{TolX}$=0.0005$ and \code{TolFun}$=10^{-9}$\;
+ Stop on reaching 200 iterations or 400 objective evaluations\;
+}
+Re-evaluate the returned $z$ with Algorithm~\ref{alg:optional_trial}, allowing no failure penalty\;
+\If{any $|e_j|>0.005$}{Report failure rather than returning an unmatched baseline\;}
+Store the city, starting primitives, fitted multipliers and moment-fit diagnostics\;
+Restore user numerical options rather than retaining internal warm-start guesses\;
+\KwResult{Verified empirical baseline; fitted primitives are inherited by counterfactuals unless explicitly changed.}
+\end{algorithm2e}
+
+\code{STOP_CITY_TARGET_SEARCH} implements the early-stop condition, which bounds each proportional moment error by approximately 0.2\%. Final acceptance allows 0.5\% because radial land-use boundaries are discrete. The preliminary and final searches each have their own iteration/evaluation limits; the starting solve and final verification are additional calls. A successful optimizer exit is not a substitute for the final moment checks.
+
+Every candidate re-inverts rural utility and can require multiple equilibrium solves. Candidates currently reuse an adjusted version of the same original solved state, not the nearest previously solved candidate. Together with the preliminary fit and the empirical script's finer grid, this explains why the optional inversion is slower than the paper baseline. Floor-space-only calibration without area or CBD targets continues to use Algorithm~9 and its 0.1\% tolerance.
+
+\clearpage
+\subsection{Central CBD FAR and the two master scripts}
+The optional \code{targets.cbd_far} identifies a common scale $k_\tau>0$ such that
+\begin{equation}
+ \tau^R=k_\tau\tau^R_0,\qquad \tau^C=k_\tau\tau^C_0,
+ \qquad S^C(0)=S^C_{\mathrm{target}}.
+\end{equation}
+Both starting decay rates must be positive. The moment is realized commercial floor-area ratio at the city centre, measured as floor space per unit developable land, not the CBD-wide mean or a literal storey count. An empty target retains the supplied taus. A target at or above a finite manual commercial cap is rejected: it is either impossible or the cap prevents identification of the decay scale.
+
+Algorithms~\ref{alg:optional_init}--\ref{alg:optional_search} explicitly add one log coordinate and one log moment error when this target is active. For initialization, it first fits any housing and area targets at the supplied taus. It predicts a tau multiplier from the resulting central FAR mismatch, then jointly adjusts all active parameters. Every trial re-matches population and urbanization, retaining manual height limits. The final 0.5\% check also applies to CBD FAR; no empirical moment is silently discarded. Diagnostics retain the starting taus, common multiplier and achieved central FAR. Counterfactuals inherit calibrated taus unless explicitly changed.
+
+\code{MASTER_PAPER.m} preserves the paper's parameter values and the original 10-metre radial grid. Population, urbanization and height-gap inversion remain active, while wage conversion and additional physical targets are empty. It saves figures and tables under \code{MATLAB/outputs/Paper}.
+
+\code{MASTER_EMPIRICAL.m} also starts with the paper's parameters, but targets annual wage 75,000 USD, residential rent 240 USD per square metre per year, geographic urban area $\pi18^2$ square kilometres, and central CBD FAR 10. A 5-metre grid resolves boundaries under steeper spatial gradients. The script estimates the construction-cost scale, agricultural land rent and tau scale; it does not preset the fitted tau multiplier. It saves under \code{MATLAB/outputs/Empirical}.
+
+Both scripts reset their input structures, accept optional counterfactual changes and contain no function definitions. \code{MASTER.m} is a compatibility entry point for the paper script. The separate output directories retain both examples when users switch between them. The empirical example is an alternative quantification, not a claim that the paper's original parameterization matches those additional physical moments.
+
+
+\clearpage
+\subsection{Height-gap inversion and the reported outcome}
+The estimated tall-height threshold $T$ is tied to the paper's parameterization. Height-gap inversion is therefore permitted only with the paper structural parameter values and no optional physical calibration. \code{IS_PAPER_PARAMETERS} checks these values. Regional population, rural utility and policy limits are not structural parameters in this check. A finite manual cap still supersedes an ignored height-gap input. The empirical master uses \code{targets.height_gap = []}; changing construction costs, spatial decay or agricultural rent does not recalibrate $T$.
+
+Both master scripts nevertheless report the realized height gap as an outcome. For a scenario with primitives $\mathcal P$, let $H(\mathcal P)$ denote its excess floor space above $T$, and let $\mathcal P^{\infty}$ remove only its vertical limits. Then
+\begin{equation}
+ g(\mathcal P)=1-\frac{H(\mathcal P)}{H(\mathcal P^{\infty})},
+ \qquad H(\mathcal P^{\infty})>0.
+\end{equation}
+The table displays $100g$ in percent. Each scenario uses its own unrestricted-height comparison, with its other primitives, rural utility, regional population and growth boundary held fixed. If unrestricted tall development is absent, the gap is undefined and displayed as \texttt{--}; it is not recorded as zero. The inversion's zero-target shortcut does not change this reporting convention.
+
+\code{ADD_HEIGHT_GAP} reuses an available inversion benchmark, or solves the unrestricted comparison after the city has been quantified. An already unrestricted city is its own benchmark. \code{QUANTIFY} and \code{COUNTERFACTUAL} store the outcome; \code{RESULTS} upgrades older saved cities when needed. Optional calibration trials do not solve unused height-gap comparisons solely for reporting.
+
+Under the empirical parameterization, the reported number is descriptive at the retained model $T$, and should not be interpreted as matching the paper's empirical height-gap measure. The codebook's earlier optional-calibration algorithms are subject to this restriction: they match the other requested moments and retain manual height limits, but do not invert a height-gap target.
+
+\end{document}
+
+

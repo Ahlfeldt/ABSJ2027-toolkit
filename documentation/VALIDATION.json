@@ -1,0 +1,147 @@
+{
+  "checks": [
+    "Master baseline-only workflow, graphics, population, markets, and GDP",
+    "Omitted changes, empty changes, and exact zero-shock identity",
+    "All three paper illustrative experiments within 0.6 percentage points",
+    "Binding, nonbinding, and joint growth-boundary/height-cap experiments",
+    "Interior height-gap inversion, boundary-conditional inversion, and direct-cap mode",
+    "Repeatable percentage changes, fixed baseline primitives, and independent sector parameters",
+    "Duplicate, unknown, infinite-percentage, and invalid-parameter rejection",
+    "Exact original SOLVER identity at Inf and original baseline inversion comparison"
+  ],
+  "baseline": {
+    "N": 2.9981574261038103E+6,
+    "L": 2.9978516072497033E+6,
+    "AREA": 1283.9502250458595,
+    "CC": 1.2598391181429021,
+    "p_R": 444.93786393930782,
+    "p_C": 811.49447093326319,
+    "A_tilde_C": 3.0215678464400004,
+    "y": 1.1378078026462271,
+    "LV": 1.268853433448039E+6,
+    "U_bar": 0.10458691689856324,
+    "V": 0.11656146263967765,
+    "x0": 6.2700000000000005,
+    "x1": 28.59,
+    "F_C": 759.3314697609062,
+    "F_R": 2863.6868026036504,
+    "F_C_tall": 759.3314697609062,
+    "F_R_tall": 1444.3921256533083,
+    "F_tall": 2203.7235954142143,
+    "F_tallE": 1076.4185370355581,
+    "HA": 1.0296160076847578,
+    "GDP": 4.0133257799795815E+6,
+    "wage_bill": 3.411326912982644E+6,
+    "density": 2335.1040933044919,
+    "DD": 0.44170321834838383,
+    "urban_share": 0.49969290435063507,
+    "F": 3623.0182723645567
+  },
+  "illustrative_fields": [
+    "N",
+    "AREA",
+    "CC",
+    "p_R",
+    "p_C",
+    "A_tilde_C",
+    "y",
+    "LV",
+    "U_bar",
+    "V"
+  ],
+  "illustrative_percent": [
+    [
+      -9.0936870826721972,
+      -20.111843541788165,
+      -14.665192727597653
+    ],
+    [
+      15.605744688477863,
+      15.982126483123515,
+      8.6563744408982188
+    ],
+    [
+      2.5750560496276886,
+      7.8821913226850171,
+      5.582919030615785
+    ],
+    [
+      -0.38640171779134036,
+      -15.025813321087734,
+      -12.025908129733454
+    ],
+    [
+      7.5159818191702144,
+      0.8295634994469836,
+      -2.3052687379084169
+    ],
+    [
+      -0.88180055466530183,
+      -5.1048348193658555,
+      -4.2569046670950854
+    ],
+    [
+      -2.4694801032819291,
+      -6.5500379517432483,
+      -4.9061716377129638
+    ],
+    [
+      -0.44737005253587814,
+      3.6354193678733937,
+      2.9455948616714078
+    ],
+    [
+      -2.80787601796878,
+      -6.1700383634612388,
+      -4.5095286710182254
+    ],
+    [
+      -1.3491676801235863,
+      -2.8196041254715309,
+      -2.113778118816223
+    ]
+  ],
+  "illustrative_max_deviation_pp": 0.094731262091583,
+  "boundary": {
+    "N": 2.8117380456665168E+6,
+    "L": 2.8092122777744029E+6,
+    "AREA": 981.74770424681037,
+    "CC": 1.2419752303787825,
+    "p_R": 457.6842068885444,
+    "p_C": 805.1282058255249,
+    "A_tilde_C": 3.0184562893909637,
+    "y": 1.1378196662326878,
+    "LV": 1.2498660784380417E+6,
+    "U_bar": 0.10257292174652363,
+    "V": 0.11546930126568478,
+    "x0": 6.12,
+    "x1": 25,
+    "F_C": 716.33175033729492,
+    "F_R": 2554.9488402395764,
+    "F_C_tall": 716.33175033729492,
+    "F_R_tall": 1430.4856744024471,
+    "F_tall": 2146.8174247397419,
+    "F_tallE": 1036.8219761265118,
+    "HA": 1.0312807437357268,
+    "GDP": 3.7638245231223837E+6,
+    "wage_bill": 3.199250844654026E+6,
+    "density": 2864.0128553431778,
+    "DD": 0.43230357850993151,
+    "urban_share": 0.46862300761108611,
+    "F": 3271.2805905768714
+  },
+  "interior_height_gap": {
+    "iterations": 11,
+    "labor_error": 4.0186942467101971E-5,
+    "housing_error": 0.00083170852110803217,
+    "density_error": 3.6375067620220136E-6,
+    "iteration_type": "rural-utility inversion",
+    "population_error": 0.00054188945165178914,
+    "height_gap": 0.49958639819748341,
+    "height_gap_identified": true
+  },
+  "reference_max_relative_error": 0,
+  "elapsed_seconds": 98.0096685,
+  "matlab_version": "24.1.0.2578822 (R2024a) Update 2",
+  "passed": true
+}

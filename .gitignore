@@ -1,0 +1,5 @@
+MATLAB/outputs/
+*.asv
+*.m~
+.DS_Store
+Thumbs.db
