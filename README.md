@@ -14,9 +14,7 @@ Start with the **[illustrated showcase](SHOWCASE/README.md)** to see example exp
 
 **Citation requirement**
 
-Use of this toolkit is subject to citing 
-
-**Ahlfeldt, Baum-Snow, and Jedwab, *The Skyscraper Revolution: Global Economic Development and Land Savings*. *The Review of Economic Studies*, forthcoming.**
+Use of this toolkit is subject to citing **Ahlfeldt, Baum-Snow, and Jedwab, *The Skyscraper Revolution: Global Economic Development and Land Savings*. *The Review of Economic Studies*, forthcoming.**
 
 **How this toolkit differs from related toolkits**
 
