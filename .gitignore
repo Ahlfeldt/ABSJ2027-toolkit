@@ -1,4 +1,7 @@
 MATLAB/outputs/
+Python/outputs/
+__pycache__/
+*.py[cod]
 *.asv
 *.m~
 .DS_Store

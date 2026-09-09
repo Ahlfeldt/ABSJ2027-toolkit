@@ -6,7 +6,7 @@ Development version, September 2026
 
 **General instructions**
 
-This toolkit accompanies *The Skyscraper Revolution*. It provides a compact MATLAB implementation of the paper's city model for teaching, exploration, and counterfactual analysis. Users specify parameters and empirical moments, quantify a baseline city, and evaluate changes in productivity, amenities, construction costs, height constraints, and urban growth boundaries. The toolkit stays close to the paper's MATLAB functions, with separate, commented function files and simple master scripts.
+This toolkit accompanies *The Skyscraper Revolution*. It provides compact MATLAB and Python implementations of the paper's city model for teaching, exploration, and counterfactual analysis. Users specify parameters and empirical moments, quantify a baseline city, and evaluate changes in productivity, amenities, construction costs, height constraints, and urban growth boundaries. The Python version mirrors the MATLAB structure and equations, with separate function files and two simple Spyder-compatible master scripts.
 
 The toolkit shows height / floor area ratio (FAR), floor space rent, and land rent gradients together with land-use boundaries. It also reports population, wages, GDP (model output), total urban area, floor space, commuting disamenity, the density disamenity index, utility, and other aggregate outcomes. Counterfactual tables show both scenarios and percentage changes.
 
@@ -32,10 +32,14 @@ ABSJ2027 therefore sits between the compact illustrative model in AB2022 and the
 
 Download or clone this repository, open one of the master scripts below in MATLAB, and run the entire script. No replication directory or external data are required. The toolkit has been tested with MATLAB R2024a Update 2 and requires the Statistics and Machine Learning Toolbox for inherited `nansum` calls. Optimization uses MATLAB's `fminsearch`.
 
+For Python, open either `.py` master in Spyder and choose **Run file**. Both masters use Spyder `# %%` cells and locate the toolkit independently of the current working directory. The Python version uses NumPy, SciPy, pandas, Matplotlib, and openpyxl; see [Python/requirements.txt](Python/requirements.txt).
+
 | Script | Description |
 |:--|:--|
 | [MASTER_PAPER.m](MATLAB/scripts/MASTER_PAPER.m) | Uses the paper's structural parameters. Matches urban population and the urbanization rate, with optional height-gap inversion. The example compares an unrestricted city with joint vertical and horizontal constraints. |
 | [MASTER_EMPIRICAL.m](MATLAB/scripts/MASTER_EMPIRICAL.m) | Starts from the paper's parameters and adds empirical targets: annual wage 75,000 USD, residential rent 240 USD/m²/year, geographic urban area equivalent to an 18 km radius, and central CBD FAR 10. |
+| [MASTER_PAPER.py](Python/scripts/MASTER_PAPER.py) | Python/Spyder version of the paper-parameterization example. |
+| [MASTER_EMPIRICAL.py](Python/scripts/MASTER_EMPIRICAL.py) | Python/Spyder version of the empirically quantified example. |
 
 MASTER_PAPER.m does not calibrate a physical spatial scale. Its distance, land area, floor space, density, and rent denominators are therefore reported in model units. MASTER_EMPIRICAL.m uses the total-urban-area target to identify kilometres and square kilometres; this also permits floor-space quantities and rents to be expressed per square metre. Its wage target separately identifies annual currency units.
 
@@ -74,9 +78,12 @@ Height-gap calibration should be used only under the paper parameterization beca
 | [SHOWCASE](SHOWCASE/README.md) | Illustrated walkthrough and saved example figures and tables. |
 | [documentation](documentation) | PDF and editable LaTeX codebook, build instructions, source map, and validation notes. |
 | [data](data/README.md) | Reserved for the future machine-readable city simulation results. |
-| [Python](Python/README.md) | Reserved for a future Python implementation, with separate `functions` and `scripts` folders. |
+| [Python/scripts](Python/scripts) | Spyder-compatible paper and empirical master scripts. |
+| [Python/functions](Python/functions) | Python counterparts to the MATLAB model, inversion, reporting, and export functions. |
 
 Running a master script creates `MATLAB/outputs/Paper` or `MATLAB/outputs/Empirical`. Each contains `Figures` (PNG and vector PDF), `Tables` (CSV, XLSX, and LaTeX), and `results.mat`. The latest full run is also mirrored directly under `MATLAB/outputs`. Generated run outputs are ignored by Git; the curated showcase examples are included in the repository.
+
+The Python masters create the same output layout under `Python/outputs`, with complete results saved as `results.pkl`. Generated Python outputs are also ignored by Git.
 
 **Documentation and further development**
 
@@ -84,4 +91,4 @@ Running a master script creates `MATLAB/outputs/Paper` or `MATLAB/outputs/Empiri
 - [Codebook build instructions](documentation/BUILD_CODEBOOK.md).
 - [Source map](documentation/SOURCE_MAP.md) and [validation notes](documentation/VALIDATION.md).
 
-The working release is the MATLAB single-city toolkit. A Python implementation, web frontend, and an accessible dataset and explorer covering the paper's nearly 13,000 cities are planned. The city dataset is not yet included; once released here, web interfaces will be able to read its machine-readable files from GitHub.
+The working release includes MATLAB and Python single-city toolkits. A web frontend and an accessible dataset and explorer covering the paper's nearly 13,000 cities are planned. The city dataset is not yet included; once released here, web interfaces will be able to read its machine-readable files from GitHub.
