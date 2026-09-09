@@ -19,6 +19,11 @@ def results(baseline, counterfactual=None, make_graphs=True):
         change[valid] = 100*(values[valid]/baseline_values[valid]-1); frame["Change_pct"] = change
     print(frame.to_string(index=False))
     figures = _figures(baseline, counterfactual, units) if make_graphs else []
+    if figures:
+        # Explicit display is needed when Spyder runs this as a script. With
+        # Spyder's Inline backend, the figures are sent to the Plots pane;
+        # nonblocking display also keeps external-window backends responsive.
+        plt.show(block=False)
     return frame, figures
 
 
