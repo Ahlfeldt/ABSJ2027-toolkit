@@ -41,6 +41,13 @@ For Python, open either `.py` master in Spyder and choose **Run file**. Both mas
 | [MASTER_PAPER.py](Python/scripts/MASTER_PAPER.py) | Python/Spyder version of the paper-parameterization example. |
 | [MASTER_EMPIRICAL.py](Python/scripts/MASTER_EMPIRICAL.py) | Python/Spyder version of the empirically quantified example. |
 
+> **Runtime note:** The empirical master scripts can take noticeably longer than
+> the paper-parameterization scripts. The empirical city is obtained through a
+> higher-dimensional numerical inversion: each candidate set of construction
+> costs, agricultural rent, and spatial decay parameters requires another full
+> equilibrium solution. Runtime therefore depends on the selected targets, grid
+> resolution, starting values, and computer.
+
 MASTER_PAPER.m does not calibrate a physical spatial scale. Its distance, land area, floor space, density, and rent denominators are therefore reported in model units. MASTER_EMPIRICAL.m uses the total-urban-area target to identify kilometres and square kilometres; this also permits floor-space quantities and rents to be expressed per square metre. Its wage target separately identifies annual currency units.
 
 Each main script has three input sections: baseline parameters, empirical targets, and optional counterfactual changes. For example:

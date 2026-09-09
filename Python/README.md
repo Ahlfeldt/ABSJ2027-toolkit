@@ -8,6 +8,12 @@ in separate files under `functions`.
 - `scripts/MASTER_EMPIRICAL.py` illustrates inversion to annual wage, residential
   rent, total urban area, and central CBD FAR.
 
+> **Runtime note:** `MASTER_EMPIRICAL.py` can take noticeably longer than the
+> paper example. Its higher-dimensional numerical inversion repeatedly solves
+> the full equilibrium while searching over construction costs, agricultural
+> rent, and spatial decay parameters. Runtime depends on the targets, grid
+> resolution, starting values, and computer.
+
 Both scripts use Spyder `# %%` cells and locate the toolkit from their own file
 path, so they run independently of Spyder's current working directory. Open a
 master script in Spyder and choose **Run file**. The standard Anaconda/Spyder
