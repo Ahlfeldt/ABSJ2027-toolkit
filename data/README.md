@@ -17,17 +17,17 @@ paper's tall-building threshold, `T`.
 
 All outcome fields ending in `_change` are proportional changes relative to the
 city's calibrated baseline. For example, `0.10` denotes a 10% increase and
-`-0.10` a 10% decrease. The `estimated_height_gap` and both urbanization-rate
-fields are also fractions between zero and one. The table additionally reports
-mean bedrock depth in metres. These city characteristics are numeric fields and
-need not be interpreted as counterfactual outcome changes.
+`-0.10` a 10% decrease. The table reports original 2015 urban population and
+original 2015 urbanization rate, as well as mean bedrock depth in metres and the
+estimated height gap. Urbanization rate and height gap are fractions between
+zero and one. These city characteristics are numeric fields and are not
+counterfactual outcome changes.
 
 `fid` is the stable city identifier in the replication files. City and country
 names come from `urbanrates.dta` and merge one-to-one to all 12,873 simulation
 identifiers. `world_region` and `development_group` come from the simulation
-input. Original population and urbanization values are reported separately from
-the model targets because the replication applies sample transformations to some
-small-city inputs.
+input. Only the original population and urbanization values are included; the
+simulation's transformed target values are omitted.
 
 The source crosswalk leaves 758 city names blank, while retaining their `fid` and
 country. These observations receive an explicit label such as
