@@ -15,13 +15,30 @@ from save_results import save_results
 
 # %% 1. Starting parameters: paper values before empirical calibration
 params = {
-    "alpha_R": .66, "alpha_C": .85, "beta_R": 0.,
-    "beta_dens_R": -.10535545480050244, "beta_C": .03,
-    "tau_R": .016, "tau_C": .014, "x_core_R": 1., "x_core_C": 1.,
-    "omega_R": .07, "omega_C": .03, "theta_C": .5, "theta_R": .55,
-    "c_R": 150., "c_C": 150., "a_bar_R": 2., "a_bar_C": 2.,
-    "r_a": 50., "ell": .5, "zeta": 6.4, "T": 2.9605069278556773,
-    "S_bar_C": np.inf, "S_bar_R": np.inf, "x1_max": np.inf,
+    "alpha_R": .66,
+    "alpha_C": .85,
+    "beta_R": 0.,
+    "beta_dens_R": -.10535545480050244,
+    "beta_C": .03,
+    "tau_R": .016,
+    "tau_C": .014,
+    "x_core_R": 1.,
+    "x_core_C": 1.,
+    "omega_R": .07,
+    "omega_C": .03,
+    "theta_C": .5,
+    "theta_R": .55,
+    "c_R": 150.,
+    "c_C": 150.,
+    "a_bar_R": 2.,
+    "a_bar_C": 2.,
+    "r_a": 50.,
+    "ell": .5,
+    "zeta": 6.4,
+    "T": 2.9605069278556773,
+    "S_bar_C": np.inf,
+    "S_bar_R": np.inf,
+    "x1_max": np.inf,
 }
 
 # %% 2. Empirical baseline targets
@@ -38,7 +55,13 @@ targets = {
 }
 
 # %% 3. Optional counterfactual changes
-changes = {"set": {"S_bar_C": 7.5, "S_bar_R": 7.5, "x1_max": 15.}, "pct": {}}
+changes = {
+    "set": {},
+    "pct": {},
+}
+changes["set"]["S_bar_C"] = 7.5
+changes["set"]["S_bar_R"] = 7.5
+changes["set"]["x1_max"] = 15.
 
 # %% Create, quantify, solve, display, and save
 options = numerics()

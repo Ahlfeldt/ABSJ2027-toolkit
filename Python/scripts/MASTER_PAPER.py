@@ -15,13 +15,30 @@ from save_results import save_results
 
 # %% 1. Baseline parameters and fundamentals: paper parameterization
 params = {
-    "alpha_R": .66, "alpha_C": .85, "beta_R": 0.,
-    "beta_dens_R": -.10535545480050244, "beta_C": .03,
-    "tau_R": .016, "tau_C": .014, "x_core_R": 1., "x_core_C": 1.,
-    "omega_R": .07, "omega_C": .03, "theta_C": .5, "theta_R": .55,
-    "c_R": 150., "c_C": 150., "a_bar_R": 2., "a_bar_C": 2.,
-    "r_a": 50., "ell": .5, "zeta": 6.4, "T": 2.9605069278556773,
-    "S_bar_C": np.inf, "S_bar_R": np.inf, "x1_max": np.inf,
+    "alpha_R": .66,
+    "alpha_C": .85,
+    "beta_R": 0.,
+    "beta_dens_R": -.10535545480050244,
+    "beta_C": .03,
+    "tau_R": .016,
+    "tau_C": .014,
+    "x_core_R": 1.,
+    "x_core_C": 1.,
+    "omega_R": .07,
+    "omega_C": .03,
+    "theta_C": .5,
+    "theta_R": .55,
+    "c_R": 150.,
+    "c_C": 150.,
+    "a_bar_R": 2.,
+    "a_bar_C": 2.,
+    "r_a": 50.,
+    "ell": .5,
+    "zeta": 6.4,
+    "T": 2.9605069278556773,
+    "S_bar_C": np.inf,
+    "S_bar_R": np.inf,
+    "x1_max": np.inf,
 }
 # S_bar_C and S_bar_R are height/FAR limits: floor area per unit developable land.
 # Any finite manual limit supersedes targets["height_gap"]. x1_max is an optional
@@ -42,7 +59,10 @@ targets = {
 # Height-gap inversion should only be used with the paper parameterization.
 
 # %% 3. Optional counterfactual changes
-changes = {"set": {}, "pct": {}}
+changes = {
+    "set": {},
+    "pct": {},
+}
 # changes["pct"]["a_bar_C"] = 10       # Raise productivity by 10 percent.
 # changes["pct"]["c_R"] = -10         # Reduce residential construction costs 10 percent.
 changes["set"]["S_bar_C"] = 10.
