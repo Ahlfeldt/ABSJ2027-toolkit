@@ -8,14 +8,19 @@ preferred specification for all 12,873 cities:
 - [`global_city_counterfactual_results.xlsx`](global_city_counterfactual_results.xlsx)
   contains the same observations, a reader guide, filters, and a data dictionary.
 
-The data are in long format. Each row represents one city in one of three
-experiments: removing all height limits, removing commercial height limits only,
-or removing residential height limits only. There are 38,619 rows in total.
+The data are in long format. Each row represents one city in one of four
+experiments: imposing the paper's no-tall-buildings restriction, removing all
+height limits, removing commercial height limits only, or removing residential
+height limits only. There are 51,492 rows in total. In the no-tall-buildings
+experiment, both commercial and residential building heights are capped at the
+paper's tall-building threshold, `T`.
 
 All outcome fields ending in `_change` are proportional changes relative to the
 city's calibrated baseline. For example, `0.10` denotes a 10% increase and
 `-0.10` a 10% decrease. The `estimated_height_gap` and both urbanization-rate
-fields are also fractions between zero and one.
+fields are also fractions between zero and one. The table additionally reports
+mean bedrock depth in metres. These city characteristics are numeric fields and
+need not be interpreted as counterfactual outcome changes.
 
 `fid` is the stable city identifier in the replication files. City and country
 names come from `urbanrates.dta` and merge one-to-one to all 12,873 simulation

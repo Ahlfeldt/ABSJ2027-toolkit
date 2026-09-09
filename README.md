@@ -84,7 +84,7 @@ Height-gap calibration should be used only under the paper parameterization beca
 | [MATLAB/functions](MATLAB/functions) | City creation, inversion, equilibrium solution, counterfactuals, graphs, tables, and validation functions. |
 | [SHOWCASE](SHOWCASE/README.md) | Illustrated walkthrough and saved example figures and tables. |
 | [documentation](documentation) | PDF and editable LaTeX codebook, build instructions, source map, and validation notes. |
-| [data](data/README.md) | Machine-readable CSV and documented Excel workbook containing three counterfactual experiments for all 12,873 cities, including city, country, region, and development-group identifiers. |
+| [data](data/README.md) | Machine-readable CSV and documented Excel workbook containing four counterfactual experiments for all 12,873 cities, including the no-tall-buildings case and numeric city characteristics such as bedrock depth, height gap, and urbanization rate. |
 | [Python/scripts](Python/scripts) | Spyder-compatible paper and empirical master scripts. |
 | [Python/functions](Python/functions) | Python counterparts to the MATLAB model, inversion, reporting, and export functions. |
 
