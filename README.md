@@ -84,7 +84,7 @@ Height-gap calibration should be used only under the paper parameterization beca
 | [MATLAB/functions](MATLAB/functions) | City creation, inversion, equilibrium solution, counterfactuals, graphs, tables, and validation functions. |
 | [SHOWCASE](SHOWCASE/README.md) | Illustrated walkthrough and saved example figures and tables. |
 | [documentation](documentation) | PDF and editable LaTeX codebook, build instructions, source map, and validation notes. |
-| [data](data/README.md) | Reserved for the future machine-readable city simulation results. |
+| [data](data/README.md) | Machine-readable CSV and documented Excel workbook containing three counterfactual experiments for all 12,873 cities, including city, country, region, and development-group identifiers. |
 | [Python/scripts](Python/scripts) | Spyder-compatible paper and empirical master scripts. |
 | [Python/functions](Python/functions) | Python counterparts to the MATLAB model, inversion, reporting, and export functions. |
 
@@ -98,4 +98,4 @@ The Python masters create the same output layout under `Python/outputs`, with co
 - [Codebook build instructions](documentation/BUILD_CODEBOOK.md).
 - [Source map](documentation/SOURCE_MAP.md) and [validation notes](documentation/VALIDATION.md).
 
-The working release includes MATLAB and Python single-city toolkits. A web frontend and an accessible dataset and explorer covering the paper's nearly 13,000 cities are planned. The city dataset is not yet included; once released here, web interfaces will be able to read its machine-readable files from GitHub.
+The working release includes MATLAB and Python single-city toolkits and the machine-readable results for all 12,873 cities. A web frontend that reads these data directly from GitHub is planned.
