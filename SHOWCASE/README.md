@@ -134,7 +134,6 @@ The paper example calibrates neither monetary nor physical spatial levels. Monet
 | Average commercial rent | model monetary units / model floor-space unit | 811.494 | 771.967 | -4.87091 |
 | Commuting disamenity index | index | 1.25984 | 1.21817 | -3.30715 |
 | Commuting disamenity: income loss per resident | model units / resident | 0.212398 | 0.183529 | -13.5922 |
-| Commuting disamenity: share of wage | % of wage | 18.6673 | 16.2879 | -12.7466 |
 | Density amenity index | index | 0.441703 | 0.419184 | -5.09838 |
 | Height amenity index | index | 1.02962 | 1.03424 | 0.449058 |
 | Urban utility | utility units | 0.104587 | 0.0983025 | -6.00881 |
@@ -246,7 +245,6 @@ utility-equivalent income loss, not a transport fare or resource-cost total.
 | Average commercial rent | USD / m^2 / year | 463.129 | 449.351 | -2.97505 |
 | Commuting disamenity index | index | 1.29863 | 1.28629 | -0.950493 |
 | Commuting disamenity: income loss per resident | USD / year / resident | 14,214.6 | 13,800.4 | -2.91335 |
-| Commuting disamenity: share of wage | % of wage | 18.9528 | 18.433 | -2.74251 |
 | Density amenity index | index | 0.400727 | 0.389135 | -2.89296 |
 | Height amenity index | index | 1.0122 | 1.01259 | 0.0380754 |
 | Urban utility | utility units | 0.0371831 | 0.0362247 | -2.57745 |
