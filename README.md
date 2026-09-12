@@ -10,7 +10,7 @@ This toolkit accompanies *The Skyscraper Revolution*. It provides compact MATLAB
 
 The toolkit shows height / floor area ratio (FAR), floor space rent, and land rent gradients together with land-use boundaries. It also reports population, wages, GDP (model output), total urban area, floor space, commuting disamenity, the density disamenity index, utility, and other aggregate outcomes. Counterfactual tables show both scenarios and percentage changes.
 
-Start with the **[illustrated showcase](SHOWCASE/README.md)** to see example experiments, figures, and downloadable tables. The **[codebook](documentation/CODEBOOK.pdf)** explains the equilibrium conditions, inversion, and numerical algorithms, including pseudocode for the optional empirical calibration.
+Start with the **[illustrated showcase](SHOWCASE/README.md)** to see example experiments, figures, and downloadable tables. The **[experimental browser simulator](web/simulator.html)** runs the faster paper-parameterization model directly in a modern browser, without a Python installation or calculation server. The **[codebook](documentation/CODEBOOK.pdf)** explains the equilibrium conditions, inversion, and numerical algorithms, including pseudocode for the optional empirical calibration.
 
 **Citation requirement**
 
@@ -85,6 +85,7 @@ Height-gap calibration should be used only under the paper parameterization beca
 | [SHOWCASE](SHOWCASE/README.md) | Illustrated walkthrough and saved example figures and tables. |
 | [documentation](documentation) | PDF and editable LaTeX codebook, build instructions, source map, and validation notes. |
 | [data](data/README.md) | Machine-readable CSV and documented Excel workbook containing four counterfactual experiments for all 12,873 cities, including the no-tall-buildings case and numeric city characteristics such as bedrock depth, height gap, and urbanization rate. |
+| [web](web/simulator.html) | Static city-results explorer and experimental Pyodide simulator. The simulator runs the paper-parameterization Python model locally in a Web Worker and requires no backend account. |
 | [Python/scripts](Python/scripts) | Spyder-compatible paper and empirical master scripts. |
 | [Python/functions](Python/functions) | Python counterparts to the MATLAB model, inversion, reporting, and export functions. |
 

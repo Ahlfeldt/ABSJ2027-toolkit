@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Run the ABSJ2027 paper-parameterization city model directly in your browser.">
+<title>ABSJ2027 · Interactive city simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="simulator.css"></head>
+<body><main><header><div class="eyebrow">ABSJ2027 toolkit · experimental browser version</div><h1>Build a city, then change it</h1>
+<p class="intro">This page runs the paper-parameterization Python model on your computer. Set a population and urbanization rate, change selected fundamentals or impose vertical and horizontal limits, and compare the resulting equilibrium cities.</p></header>
+<div class="layout"><form id="controls" class="panel"><fieldset class="group"><legend>Baseline city</legend><div class="fields">
+<label class="wide">Urban population<input id="population" type="number" min="10000" step="10000" value="3000000"></label>
+<label>Urbanization rate<input id="urbanization" type="number" min="1" max="99" step="1" value="50"><small>Percent of city plus hinterland population</small></label>
+</div></fieldset><fieldset class="group"><legend>Counterfactual changes</legend><div class="fields">
+<label>Commercial productivity<input id="prod-c" type="number" step="1" value="0"><small>Percent change</small></label>
+<label>Residential amenity<input id="amen-r" type="number" step="1" value="0"><small>Percent change</small></label>
+<label>Commercial construction cost<input id="cost-c" type="number" step="1" value="0"><small>Percent change</small></label>
+<label>Residential construction cost<input id="cost-r" type="number" step="1" value="0"><small>Percent change</small></label>
+<label>Commercial spatial decay<input id="tau-c" type="number" step="1" value="0"><small>Percent change</small></label>
+<label>Residential spatial decay<input id="tau-r" type="number" step="1" value="0"><small>Percent change</small></label>
+<label>Commercial height / FAR limit<input id="cap-c" type="number" min="0.1" step="0.1" value="15" placeholder="No limit"></label>
+<label>Residential height / FAR limit<input id="cap-r" type="number" min="0.1" step="0.1" value="15" placeholder="No limit"></label>
+<label class="wide">Urban growth boundary<input id="boundary" type="number" min="0.1" step="0.1" value="20" placeholder="No limit"><small>Radius in model distance units</small></label>
+</div></fieldset><button id="run" type="submit" disabled>Preparing simulator…</button><p id="status" class="status" role="status" aria-live="polite">Loading the Python scientific runtime…</p></form>
+<section id="results" hidden><div class="result-head"><div><h2>Simulation results</h2><div class="legend"><span class="swatch" style="--c:#205b83">Baseline</span><span class="swatch" style="--c:#a45c1c">Counterfactual</span></div></div><p id="runtime" class="runtime"></p></div>
+<div id="cards" class="cards"></div><div id="charts" class="charts"></div><p class="note">Distance, floor-space rents, land rents, and areas remain in model units under the paper parameterization. The colored strip below each spatial graph shows commercial, residential, and agricultural land use.</p></section></div>
+<footer><a href="index.html">Explore the precomputed results for 12,873 cities</a> · <a href="https://github.com/Ahlfeldt/ABSJ2027-toolkit" target="_blank" rel="noopener">Source code</a><br>Ahlfeldt, Baum-Snow, and Jedwab, <em>The Skyscraper Revolution: Global economic development and land savings.</em> <em>The Review of Economic Studies</em>, forthcoming.</footer>
+</main><script src="simulator.js"></script></body></html>
