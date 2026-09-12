@@ -3,7 +3,7 @@
 <meta name="description" content="Run the ABSJ2027 paper-parameterization city model directly in your browser.">
 <title>ABSJ2027 · Interactive city simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="simulator.css"></head>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="simulator.css?v=4"></head>
 <body><main><header><div class="eyebrow">ABSJ2027 toolkit · experimental browser version</div><h1>Build a city, then change it</h1>
 <p class="intro">This page runs the paper-parameterization Python model on your computer. Set a population and urbanization rate, change selected fundamentals or impose vertical and horizontal limits, and compare the resulting equilibrium cities.</p></header>
 <div class="layout"><form id="controls" class="panel"><fieldset class="group"><legend>Baseline city</legend><div class="fields">
@@ -22,7 +22,7 @@
 </div></fieldset><button id="run" type="submit" disabled>Preparing simulator…</button><p id="status" class="status" role="status" aria-live="polite">Loading the Python scientific runtime…</p></form>
 <section id="results" hidden><div class="result-head"><div><h2>Simulation results</h2><p class="result-intro">Percentage change from the baseline equilibrium</p></div><p id="runtime" class="runtime"></p></div>
 <div id="cards" class="cards"></div>
-<div class="chart-key" aria-label="Chart legend"><div><b>Land use and sector</b><span class="sector-key"><i style="--c:#b44b35"></i>Commercial</span><span class="sector-key"><i style="--c:#2b7bba"></i>Residential</span><span class="sector-key"><i style="--c:#999"></i>Agricultural</span></div><div><b>Scenario</b><span class="line-key solid"></span>Baseline<span class="line-key dashed"></span>Counterfactual</div></div>
-<div id="charts" class="charts"></div><p class="note">Line color identifies commercial, residential, or agricultural outcomes. Solid lines show the baseline and dashed lines show the counterfactual. The upper land-use strip is the baseline; the lower strip is the counterfactual. Distance, floor-space rents, land rents, and areas remain in model units under the paper parameterization.</p></section></div>
+<div class="chart-key" aria-label="Chart legend"><div><b>Land use and sector</b><span class="sector-key"><i style="--c:#d34832"></i>Commercial</span><span class="sector-key"><i style="--c:#2478b5"></i>Residential</span><span class="sector-key"><i style="--c:#999"></i>Agricultural</span></div><div><b>Scenario</b><span class="line-key solid"></span>Baseline<span class="line-key dashed"></span>Counterfactual</div></div>
+<div id="charts" class="charts"></div><p class="note">Line color identifies commercial, residential, or agricultural outcomes. Solid lines show the baseline and dashed lines show the counterfactual. The two labeled bands under every spatial graph show the baseline and counterfactual land-use patterns. Distance, floor-space rents, land rents, and areas remain in model units under the paper parameterization.</p></section></div>
 <footer><a href="index.html">Explore the precomputed results for 12,873 cities</a> · <a href="https://github.com/Ahlfeldt/ABSJ2027-toolkit" target="_blank" rel="noopener">Source code</a><br>Ahlfeldt, Baum-Snow, and Jedwab, <em>The Skyscraper Revolution: Global economic development and land savings.</em> <em>The Review of Economic Studies</em>, forthcoming.</footer>
-</main><script src="simulator.js"></script></body></html>
+</main><script src="simulator.js?v=4"></script></body></html>
