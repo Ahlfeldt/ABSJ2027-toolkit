@@ -4,9 +4,7 @@
 <title>ABSJ2027 · Interactive city simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="simulator.css?v=4"></head>
-<body><main><header><div class="eyebrow">ABSJ2027 toolkit · experimental browser version</div><h1>Build a city, then change it</h1>
-<p class="intro">This page runs the paper-parameterization Python model on your computer. Set a population and urbanization rate, change selected fundamentals or impose vertical and horizontal limits, and compare the resulting equilibrium cities.</p></header>
-<div class="layout"><form id="controls" class="panel"><fieldset class="group"><legend>Baseline city</legend><div class="fields">
+<body><main><div class="layout"><form id="controls" class="panel"><fieldset class="group"><legend>Baseline city</legend><div class="fields">
 <label class="wide">Urban population<input id="population" type="number" min="10000" step="10000" value="3000000"></label>
 <label>Urbanization rate<input id="urbanization" type="number" min="1" max="99" step="1" value="50"><small>Percent of city plus hinterland population</small></label>
 </div></fieldset><fieldset class="group"><legend>Counterfactual changes</legend><div class="fields">
