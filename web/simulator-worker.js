@@ -4,6 +4,7 @@ const MODULES = [
   'status.py', 'numerics.py', 'create_city.py', 'solver.py', 'eqfind.py',
   'find_utilde.py', 'validate_inputs.py', 'pack_result.py',
   'is_paper_parameters.py', 'quantify_city.py', 'apply_changes.py',
+  'add_height_gap.py',
   'web_simulation.py'
 ];
 
@@ -34,7 +35,7 @@ self.onmessage = async event => {
   if (event.data?.type !== 'simulate') return;
   try {
     const pyodide = await ready;
-    postMessage({type: 'status', message: 'Quantifying the baseline city…'});
+    postMessage({type: 'status', message: 'Solving the baseline, counterfactual, and height-gap comparison…'});
     pyodide.globals.set('simulation_payload_json', JSON.stringify(event.data.payload));
     const output = await pyodide.runPythonAsync(`
 import json

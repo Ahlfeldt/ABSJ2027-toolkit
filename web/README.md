@@ -13,8 +13,9 @@ server, database, user account, or submitted user data.
 
 The browser adapter is `Python/functions/web_simulation.py`. It calls the same
 city creation, validation, equilibrium, change, and result-packing functions as
-the desktop toolkit. To keep interaction fast, it omits the optional empirical
-moment inversion and the extra solve used only to report the height gap.
+the desktop toolkit. It omits the optional empirical-moment inversion. When a
+finite height/FAR limit is imposed, it performs an additional unrestricted
+comparison to report the resulting endogenous height gap.
 
 Serve the repository root over HTTP for local testing. Opening the HTML files
 directly from disk will not work because browsers restrict Worker and module

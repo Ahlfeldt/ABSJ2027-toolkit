@@ -1,15 +1,16 @@
 """Thin JSON-friendly adapter for the browser-based paper model.
 
 This module deliberately calls the existing toolkit functions.  It skips the
-optional empirical-moment inversion and the descriptive height-gap re-solve so
-that an interactive browser request only solves the baseline and counterfactual
-cities.
+optional empirical-moment inversion.  When a user imposes a finite vertical
+limit, it performs the same unrestricted comparison used elsewhere in the
+toolkit to report the resulting endogenous height gap.
 """
 
 import math
 import numpy as np
 
 from apply_changes import apply_changes
+from add_height_gap import add_height_gap
 from create_city import create_city
 from eqfind import eqfind
 from numerics import numerics
@@ -93,7 +94,7 @@ def _profile(result, maximum_distance):
 def _aggregates(result):
     scalars = result["scalist"]
     names = ("N", "y", "GDP", "p_R", "p_C", "LV", "CC", "U_bar",
-             "V", "AREA", "density", "DD", "F", "x0", "x1")
+             "V", "AREA", "density", "DD", "F", "x0", "x1", "height_gap")
     return {name: _safe(scalars[name]) for name in names}
 
 
@@ -114,6 +115,10 @@ def simulate_web(payload):
         "height_gap": None,
     }
     baseline = quantify_city(params, fund, options, targets)
+    # With no baseline vertical ceiling, the simulated baseline height gap is
+    # zero by construction; no additional equilibrium solve is required.
+    baseline["height_gap"] = 0.0
+    baseline["scalist"]["height_gap"] = 0.0
 
     changes = _clean_changes(payload)
     counter_params, counter_fund = apply_changes(
@@ -123,6 +128,11 @@ def simulate_web(payload):
         counter_params, counter_fund, options, baseline)
     counterfactual = pack_result(counter_params, counter_fund, y, utility,
                                  scalars, variables, density, iterations)
+    if math.isfinite(counter_params["S_bar_C"]) or math.isfinite(counter_params["S_bar_R"]):
+        counterfactual = add_height_gap(counterfactual, options, urbanization)
+    else:
+        counterfactual["height_gap"] = 0.0
+        counterfactual["scalist"]["height_gap"] = 0.0
 
     edge = max(baseline["scalist"]["x1"], counterfactual["scalist"]["x1"])
     maximum_distance = min(options["radius"], max(5., edge * 1.12))
