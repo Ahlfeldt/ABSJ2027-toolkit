@@ -55,7 +55,7 @@ def quantify_city(params, fund, options, targets, initial=None):
     start = max(params["T"], 0.01)
     fit = minimize(objective, [np.log(start)], method="Nelder-Mead",
                    options={"xatol": options["tol"], "fatol": options["hg_tol"],
-                            "maxiter": options["hg_max_iter"], "maxfev": options["hg_max_fun_eval"]})
+                            "maxiter": options["hg_max_iter"], "maxfev": options["hg_max_evals"]})
     params["S_bar_R"] = float(np.exp(fit.x[0])); params["S_bar_C"] = params["S_bar_R"]
     result = _solve(params, fund, options, targets["urbanization_rate"], cache["initial"])
     result["height_gap"] = _height_gap(result, options, targets["urbanization_rate"])
@@ -67,5 +67,5 @@ def quantify_city(params, fund, options, targets, initial=None):
 def _height_gap(result, options, urban_share):
     unrestricted_params = dict(result["params"], S_bar_R=np.inf, S_bar_C=np.inf)
     unrestricted = _solve(unrestricted_params, result["fund"], options, urban_share, result)
-    denominator = unrestricted["scalist"]["F_tall"]
-    return 0.0 if denominator <= 0 else max(0.0, 1-result["scalist"]["F_tall"]/denominator)
+    denominator = unrestricted["scalist"]["F_tallE"]
+    return 0.0 if denominator <= 1e-10 else max(0.0, 1-result["scalist"]["F_tallE"]/denominator)
