@@ -77,6 +77,17 @@ def _profile(result, maximum_distance):
         array = np.asarray(variables[name])[indices]
         return [_safe(item) for item in array]
 
+    # The solver stores residents and workers as totals in each radial land
+    # cell.  Dividing by developable land converts them into comparable local
+    # density gradients in people per model land-area unit.
+    land = np.asarray(variables["LAND_x"])[indices]
+
+    def density_values(name):
+        totals = np.asarray(variables[name])[indices]
+        with np.errstate(invalid="ignore", divide="ignore"):
+            density = np.where(land > 0, totals / land, np.nan)
+        return [_safe(item) for item in density]
+
     return {
         "distance": [_safe(item) for item in distance[indices]],
         "commercial_height": values("S_x_C"),
@@ -86,6 +97,8 @@ def _profile(result, maximum_distance):
         "commercial_land_rent": values("r_x_C"),
         "residential_land_rent": values("r_x_R"),
         "agricultural_land_rent": [_safe(result["params"]["r_a"])] * len(indices),
+        "employment_density": density_values("L_x_C"),
+        "population_density": density_values("n_x"),
         "land_use": [int(item) if math.isfinite(float(item)) else None
                      for item in np.asarray(variables["U"])[indices]],
     }
