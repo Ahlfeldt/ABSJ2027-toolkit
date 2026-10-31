@@ -9,17 +9,47 @@ const MODULES = [
 ];
 
 let ready;
+const pause = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+
+async function retry(task, label, attempts = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await task();
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) {
+        postMessage({type: 'status', message: `${label} failed. Retrying (${attempt + 1}/${attempts})…`});
+        await pause(500 * attempt);
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function initialize() {
   postMessage({type: 'status', message: 'Loading the Python scientific runtime…'});
-  importScripts(`${PYODIDE_BASE}pyodide.js`);
-  const pyodide = await loadPyodide({indexURL: PYODIDE_BASE});
-  await pyodide.loadPackage(['numpy', 'scipy']);
+  if (typeof loadPyodide === 'undefined') importScripts(`${PYODIDE_BASE}pyodide.js`);
+  const pyodide = await retry(
+    () => loadPyodide({indexURL: PYODIDE_BASE}),
+    'Loading the Python runtime'
+  );
+  await retry(
+    () => pyodide.loadPackage(['numpy', 'scipy']),
+    'Loading the scientific packages'
+  );
   postMessage({type: 'status', message: 'Loading the ABSJ2027 model…'});
   const modelBase = new URL('../Python/functions/', self.location.href);
   await Promise.all(MODULES.map(async name => {
-    const response = await fetch(new URL(name, modelBase));
-    if (!response.ok) throw new Error(`Could not load ${name}.`);
-    pyodide.FS.writeFile(`/home/pyodide/${name}`, await response.text(), {encoding: 'utf8'});
+    const source = await retry(
+      async () => {
+        const response = await fetch(new URL(name, modelBase), {cache: 'no-store'});
+        if (!response.ok) throw new Error(`Could not load ${name} (${response.status}).`);
+        return response.text();
+      },
+      `Loading ${name}`
+    );
+    pyodide.FS.writeFile(`/home/pyodide/${name}`, source, {encoding: 'utf8'});
   }));
   pyodide.runPython("import sys; sys.path.insert(0, '/home/pyodide'); from web_simulation import simulate_web");
   postMessage({type: 'ready'});
@@ -27,7 +57,7 @@ async function initialize() {
 }
 
 ready = initialize().catch(error => {
-  postMessage({type: 'error', message: `The simulator could not start: ${error.message}`});
+  postMessage({type: 'error', message: `The simulator could not start after three attempts: ${error.message}. Please reload the page to try again.`});
   throw error;
 });
 

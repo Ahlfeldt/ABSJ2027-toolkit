@@ -1,4 +1,4 @@
-const worker = new Worker('simulator-worker.js?v=6');
+const worker = new Worker('simulator-worker.js?v=7');
 const $ = id => document.getElementById(id);
 let started = 0;
 const value = id => { const raw=$(id).value.trim(); return raw===''?null:Number(raw); };
